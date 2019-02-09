@@ -1,0 +1,28 @@
+{
+    "name": "mhilker/cqrs",
+    "description": "CQRS library",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maik Hilker",
+            "email": "maikhilker89@gmail.com"
+        }
+    ],
+    "require": {
+      "ext-pdo": "*",
+      "ext-json": "*",
+      "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MHilker\\CQRS\\": "src/CQRS",
+            "MHilker\\EventSourcing\\": "src/EventSourcing"
+        }
+    },
+    "autoload-dev":  {
+        "psr-4": {
+            "MHilker\\Example\\": "example/"
+        }
+    }
+}
