@@ -11,7 +11,13 @@ class EventHandlers
 {
     private $handlers = [];
 
-    public function addHandler(callable $eventHandler, string $eventClass)
+    /**
+     * @param callable $eventHandler
+     * @param string $eventClass
+     * @return void
+     * @throws DuplicateEventHandlerException
+     */
+    public function addHandler(callable $eventHandler, string $eventClass): void
     {
         if (class_exists($eventClass) === false) {
             throw new InvalidEventClassException();
@@ -24,6 +30,10 @@ class EventHandlers
         $this->handlers[$eventClass][] = $eventHandler;
     }
 
+    /**
+     * @param string $eventClass
+     * @return array
+     */
     public function getEventHandlersForEventClass(string $eventClass): array
     {
         return $this->handlers[$eventClass] ?? [];

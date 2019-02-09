@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MHilker\EventSourcing;
+namespace MHilker\EventSourcing\Repository;
 
 use MHilker\CQRS\Event\DirectEventBus;
+use MHilker\EventSourcing\AbstractAggregateRoot;
+use MHilker\EventSourcing\AggregateId;
+use MHilker\EventSourcing\Repository\AggregateRepositoryInterface;
+use MHilker\EventSourcing\Event\Events;
 use MHilker\EventSourcing\Exception\AggregateNotFoundException;
 
-class AggregateRepository
+class AggregateRepository implements AggregateRepositoryInterface
 {
     private $pdo;
 
@@ -24,7 +28,7 @@ class AggregateRepository
 
     public function save(AbstractAggregateRoot $aggregate): void
     {
-        $events = $aggregate->getEvents();
+        $events = $aggregate->popEvents();
 
         $this->pdo->beginTransaction();
 
@@ -33,7 +37,7 @@ class AggregateRepository
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'aggregate_id' => $aggregate->getAggregateId()->toString(),
+                'aggregate_id' => $aggregate->getAggregateId()->asString(),
                 'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
                 'event_type'   => get_class($event),
                 'payload'      => json_encode($event->getPayload())
@@ -52,7 +56,7 @@ class AggregateRepository
         $query = 'SELECT * FROM events WHERE aggregate_id = :aggregate_id;';
         $statement = $this->pdo->prepare($query);
         $statement->execute([
-            'aggregate_id' => $id->toString(),
+            'aggregate_id' => $id->asString(),
         ]);
 
         if ($statement->rowCount() === 0) {

@@ -11,6 +11,11 @@ class CommandHandlers
 {
     private $handlers = [];
 
+    /**
+     * @param callable $commandHandler
+     * @param string $commandClass
+     * @return void
+     */
     public function addHandler(callable $commandHandler, string $commandClass): void
     {
         if (class_exists($commandClass) === false) {
@@ -20,11 +25,20 @@ class CommandHandlers
         $this->handlers[$commandClass] = $commandHandler;
     }
 
+    /**
+     * @param string $commandClass
+     * @return bool
+     */
     public function hasHandlerForCommand(string $commandClass): bool
     {
         return isset($this->handlers[$commandClass]) === true;
     }
 
+    /**
+     * @param string $commandClass
+     * @return callable
+     * @throws CommandHandlerNotFoundException
+     */
     public function getHandlerForCommand(string $commandClass): callable
     {
         if ($this->hasHandlerForCommand($commandClass) === false) {

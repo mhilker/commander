@@ -18,7 +18,7 @@ class TestId implements AggregateId
         $this->id = $id;
     }
 
-    public function toString(): string
+    public function asString(): string
     {
         return $this->id;
     }

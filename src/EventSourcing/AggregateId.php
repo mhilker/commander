@@ -6,5 +6,8 @@ namespace MHilker\EventSourcing;
 
 interface AggregateId
 {
-    public function toString(): string;
+    /**
+     * @return string
+     */
+    public function asString(): string;
 }

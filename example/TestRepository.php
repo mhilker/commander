@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace MHilker\Example;
 
-use MHilker\EventSourcing\AggregateId;
-use MHilker\EventSourcing\AggregateRepository;
+use MHilker\EventSourcing\Repository\AggregateRepositoryInterface;
 
 class TestRepository
 {
-    /** @var AggregateRepository */
     private $repository;
 
-    public function __construct(AggregateRepository $repository)
+    public function __construct(AggregateRepositoryInterface $repository)
     {
         $this->repository = $repository;
-    }
-
-    public function getRepository(): AggregateRepository
-    {
-        return $this->repository;
     }
 
     public function save(TestAggregate $test): void
@@ -27,7 +20,7 @@ class TestRepository
         $this->repository->save($test);
     }
 
-    public function load(AggregateId $id): TestAggregate
+    public function load(TestId $id): TestAggregate
     {
         return $this->repository->load($id);
     }

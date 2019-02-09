@@ -15,7 +15,7 @@ $pdo = new \PDO($dsn, $username, $password, $options);
 $eventHandlers = new \MHilker\CQRS\Event\EventHandlers();
 $eventBus = new \MHilker\CQRS\Event\DirectEventBus($eventHandlers);
 
-$aggregateRepository = new \MHilker\EventSourcing\AggregateRepository($pdo, $eventBus, \MHilker\Example\TestAggregate::class);
+$aggregateRepository = new \MHilker\EventSourcing\Repository\AggregateRepository($pdo, $eventBus, \MHilker\Example\TestAggregate::class);
 
 $repository = new \MHilker\Example\TestRepository($aggregateRepository);
 

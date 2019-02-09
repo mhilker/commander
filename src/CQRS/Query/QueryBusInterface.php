@@ -6,5 +6,9 @@ namespace MHilker\CQRS\Query;
 
 interface QueryBusInterface
 {
+    /**
+     * @param object $query
+     * @return mixed
+     */
     public function execute($query);
 }

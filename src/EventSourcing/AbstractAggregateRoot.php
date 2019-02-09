@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace MHilker\EventSourcing;
 
+use MHilker\EventSourcing\Event\Event;
+use MHilker\EventSourcing\Event\Events;
+use MHilker\EventSourcing\Exception\AggregateEventHandlerMethodNotFound;
+
 abstract class AbstractAggregateRoot
 {
     private $events;
@@ -13,12 +17,21 @@ abstract class AbstractAggregateRoot
         $this->events = new Events();
     }
 
+    /**
+     * @param Event $event
+     * @throws AggregateEventHandlerMethodNotFound
+     * @return void
+     */
     public function recordThat(Event $event): void
     {
         $this->events->addEvent($event);
         $this->apply($event);
     }
 
+    /**
+     * @param Events $events
+     * @return AbstractAggregateRoot
+     */
     public static function reconstituteFromHistory(Events $events): AbstractAggregateRoot
     {
         $aggregate = new static();
@@ -30,6 +43,11 @@ abstract class AbstractAggregateRoot
         return $aggregate;
     }
 
+    /**
+     * @param object $event
+     * @throws AggregateEventHandlerMethodNotFound
+     * @return void
+     */
     public function apply($event): void
     {
         $className = get_class($event);
@@ -38,12 +56,22 @@ abstract class AbstractAggregateRoot
 
         $method = 'when' . ucfirst(substr($last, 0, strlen('Event') * -1));
 
+        if (method_exists($this, $method) === false) {
+            throw new AggregateEventHandlerMethodNotFound();
+        }
+
         $this->$method($event);
     }
 
+    /**
+     * @return AggregateId
+     */
     abstract public function getAggregateId(): AggregateId;
 
-    public function getEvents(): Events
+    /**
+     * @return Events
+     */
+    public function popEvents(): Events
     {
         $events = $this->events;
         $this->events = new Events();

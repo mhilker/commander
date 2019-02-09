@@ -6,7 +6,7 @@ namespace MHilker\Example;
 
 use DateTimeImmutable;
 use MHilker\EventSourcing\AggregateId;
-use MHilker\EventSourcing\Event;
+use MHilker\EventSourcing\Event\Event;
 
 class TestWasCreatedEvent implements Event
 {
