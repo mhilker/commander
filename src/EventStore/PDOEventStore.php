@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Commander\EventStore;
 
 use Commander\Aggregate\AggregateId;
+use PDO;
 
 final class PDOEventStore implements EventStore
 {
+    /** @var PDO */
     private $pdo;
 
-    public function __construct(\PDO $pdo)
+    public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }

@@ -10,12 +10,15 @@ use Commander\Event\EventBus;
 use Commander\EventStore\EventStore;
 use Commander\EventStore\StorableEvents;
 
-final class EventStoreAggregateRepository implements AggregateRepositoryInterface
+final class EventStoreAggregateRepository implements AggregateRepository
 {
+    /** @var EventStore */
     private $eventStore;
 
+    /** @var EventBus */
     private $eventBus;
 
+    /** @var string */
     private $aggregateClass;
 
     public function __construct(EventStore $eventStore, EventBus $eventBus, string $aggregateClass)

@@ -11,7 +11,7 @@ final class CommandHandlers
 {
     private $handlers = [];
 
-    public function __construct($handlers)
+    public function __construct(array $handlers)
     {
         foreach ($handlers as $commandClass => $commandHandler) {
             $this->add($commandClass, $commandHandler);

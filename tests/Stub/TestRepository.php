@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Commander\Stub;
 
-use Commander\Aggregate\AggregateRepositoryInterface;
+use Commander\Aggregate\AggregateRepository;
 
 class TestRepository
 {
     private $repository;
 
-    public function __construct(AggregateRepositoryInterface $repository)
+    public function __construct(AggregateRepository $repository)
     {
         $this->repository = $repository;
     }

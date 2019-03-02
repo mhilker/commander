@@ -9,20 +9,16 @@ use Commander\Command\Exception\InvalidCommandException;
 
 final class DirectCommandBus implements CommandBus
 {
+    /** @var CommandHandlers */
     private $handlers;
 
-    /**
-     * @param CommandHandlers $handlers
-     */
     public function __construct(CommandHandlers $handlers)
     {
         $this->handlers = $handlers;
     }
 
     /**
-     * @param object $command
      * @throws CommandHandlerNotFoundException
-     * @return void
      */
     public function execute($command): void
     {
