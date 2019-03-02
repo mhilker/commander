@@ -1,5 +1,5 @@
 {
-    "name": "mhilker/cqrs",
+    "name": "commander/commander",
     "description": "CQRS library",
     "type": "library",
     "license": "MIT",
@@ -17,12 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MHilker\\CQRS\\": "src/CQRS"
-        }
-    },
-    "autoload-dev":  {
-        "psr-4": {
-            "MHilker\\Example\\": "example/"
+            "Commander\\": "src/"
         }
     }
 }

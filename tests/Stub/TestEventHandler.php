@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Commander\Stub;
+
+use Commander\Event\EventHandler;
+use Commander\Event\Events;
+
+class TestEventHandler implements EventHandler
+{
+    private $callback;
+
+    public function __construct(callable $callback)
+    {
+        $this->callback = $callback;
+    }
+
+    public function handle(Events $events): void
+    {
+        ($this->callback)($events);
+    }
+}

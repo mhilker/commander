@@ -1,4 +1,4 @@
-# CSPR Collector
+# Commander
 
 CQRS and Event Sourcing library.
 
