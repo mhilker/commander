@@ -6,7 +6,7 @@ namespace Commander\Event;
 
 final class DirectEventBus implements EventBus
 {
-    /** @var EventHandler[] */
+    /** @var EventHandler[]|EventHandlers */
     private $handlers;
 
     public function __construct(EventHandlers $handlers)
