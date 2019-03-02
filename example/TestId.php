@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MHilker\Example;
 
-use MHilker\EventSourcing\AggregateId;
+use MHilker\CQRS\Aggregate\AggregateId;
 
 class TestId implements AggregateId
 {
@@ -12,10 +12,15 @@ class TestId implements AggregateId
 
     public function __construct(string $id)
     {
-        if (mb_strlen($id) === 0) {
+        if ($id === '') {
             throw new \Exception();
         }
         $this->id = $id;
+    }
+
+    public static function generate(): TestId
+    {
+        return new self(UUID::v4());
     }
 
     public function asString(): string

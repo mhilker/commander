@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MHilker\EventSourcing;
+namespace MHilker\CQRS\Aggregate;
 
 interface AggregateId
 {
-    /**
-     * @return string
-     */
     public function asString(): string;
 }

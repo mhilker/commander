@@ -4,38 +4,33 @@ declare(strict_types=1);
 
 namespace MHilker\CQRS\Event;
 
-use MHilker\CQRS\Event\Exception\DuplicateEventHandlerException;
-use MHilker\CQRS\Event\Exception\InvalidEventClassException;
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
 
-class EventHandlers
+final class EventHandlers implements IteratorAggregate
 {
     private $handlers = [];
 
-    /**
-     * @param callable $eventHandler
-     * @param string $eventClass
-     * @return void
-     * @throws DuplicateEventHandlerException
-     */
-    public function addHandler(callable $eventHandler, string $eventClass): void
+    private function __construct(iterable $handlers)
     {
-        if (class_exists($eventClass) === false) {
-            throw new InvalidEventClassException();
+        foreach ($handlers as $handler) {
+            $this->add($handler);
         }
-
-        if (in_array($eventHandler, $this->handlers[$eventClass]) === true) {
-            throw new DuplicateEventHandlerException();
-        }
-
-        $this->handlers[$eventClass][] = $eventHandler;
     }
 
-    /**
-     * @param string $eventClass
-     * @return array
-     */
-    public function getEventHandlersForEventClass(string $eventClass): array
+    public static function from(iterable $handlers = []): EventHandlers
     {
-        return $this->handlers[$eventClass] ?? [];
+        return new self($handlers);
+    }
+
+    public function add(EventHandler $eventHandler): void
+    {
+        $this->handlers[] = $eventHandler;
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->handlers);
     }
 }

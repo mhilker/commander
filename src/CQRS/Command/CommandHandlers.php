@@ -7,42 +7,35 @@ namespace MHilker\CQRS\Command;
 use MHilker\CQRS\Command\Exception\CommandHandlerNotFoundException;
 use MHilker\CQRS\Command\Exception\InvalidCommandClassException;
 
-class CommandHandlers
+final class CommandHandlers
 {
     private $handlers = [];
 
-    /**
-     * @param callable $commandHandler
-     * @param string $commandClass
-     * @return void
-     */
-    public function addHandler(callable $commandHandler, string $commandClass): void
+    public function __construct($handlers)
+    {
+        foreach ($handlers as $commandClass => $commandHandler) {
+            $this->add($commandClass, $commandHandler);
+        }
+    }
+
+    public function add(string $commandClass, callable $commandHandler): void
     {
         if (class_exists($commandClass) === false) {
-            throw new InvalidCommandClassException();
+            throw new InvalidCommandClassException('');
         }
 
         $this->handlers[$commandClass] = $commandHandler;
     }
 
-    /**
-     * @param string $commandClass
-     * @return bool
-     */
-    public function hasHandlerForCommand(string $commandClass): bool
+    public function has(string $commandClass): bool
     {
         return isset($this->handlers[$commandClass]) === true;
     }
 
-    /**
-     * @param string $commandClass
-     * @return callable
-     * @throws CommandHandlerNotFoundException
-     */
     public function getHandlerForCommand(string $commandClass): callable
     {
-        if ($this->hasHandlerForCommand($commandClass) === false) {
-            throw new CommandHandlerNotFoundException();
+        if ($this->has($commandClass) === false) {
+            throw new CommandHandlerNotFoundException('');
         }
 
         return $this->handlers[$commandClass];

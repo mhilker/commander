@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MHilker\Example;
 
-use MHilker\EventSourcing\Repository\AggregateRepositoryInterface;
+use MHilker\CQRS\Aggregate\AggregateRepositoryInterface;
 
 class TestRepository
 {

@@ -6,7 +6,7 @@ namespace MHilker\CQRS\Command\Exception;
 
 use Exception;
 
-class CommandHandlerNotFoundException extends Exception
+final class CommandHandlerNotFoundException extends Exception
 {
 
 }

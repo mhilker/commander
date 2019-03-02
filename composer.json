@@ -10,14 +10,14 @@
         }
     ],
     "require": {
-      "ext-pdo": "*",
-      "ext-json": "*",
-      "ext-mbstring": "*"
+        "php": "^7.3",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
-            "MHilker\\CQRS\\": "src/CQRS",
-            "MHilker\\EventSourcing\\": "src/EventSourcing"
+            "MHilker\\CQRS\\": "src/CQRS"
         }
     },
     "autoload-dev":  {

@@ -6,7 +6,7 @@ namespace MHilker\CQRS\Command\Exception;
 
 use InvalidArgumentException;
 
-class InvalidCommandClassException extends InvalidArgumentException
+final class InvalidCommandClassException extends InvalidArgumentException
 {
 
 }

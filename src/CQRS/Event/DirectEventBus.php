@@ -4,32 +4,20 @@ declare(strict_types=1);
 
 namespace MHilker\CQRS\Event;
 
-use MHilker\EventSourcing\Event\Event;
-
-class DirectEventBus implements EventBusInterface
+final class DirectEventBus implements EventBus
 {
+    /** @var EventHandler[] */
     private $handlers;
 
-    /**
-     * @param EventHandlers $handlers
-     */
     public function __construct(EventHandlers $handlers)
     {
         $this->handlers = $handlers;
     }
 
-    /**
-     * @param Event $event
-     * @return void
-     */
-    public function trigger(Event $event): void
+    public function dispatch(Events $events): void
     {
-        $eventClass = get_class($event);
-
-        $eventHandlers = $this->handlers->getEventHandlersForEventClass($eventClass);
-
-        foreach ($eventHandlers as $eventHandler) {
-            $eventHandler($event);
+        foreach ($this->handlers as $eventHandler) {
+            $eventHandler->handle($events);
         }
     }
 }

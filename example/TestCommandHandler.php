@@ -15,9 +15,10 @@ class TestCommandHandler
 
     public function __invoke(TestCommand $command): void
     {
-        $id = new TestId(UUID::v4());
+        $id = $command->getId();
+        $name = $command->getName();
 
-        $entity = TestAggregate::create($id);
+        $entity = TestAggregate::create($id, $name);
 
         $this->repository->save($entity);
     }

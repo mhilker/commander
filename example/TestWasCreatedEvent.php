@@ -5,36 +5,37 @@ declare(strict_types=1);
 namespace MHilker\Example;
 
 use DateTimeImmutable;
-use MHilker\EventSourcing\AggregateId;
-use MHilker\EventSourcing\Event\Event;
+use MHilker\CQRS\Aggregate\AggregateId;
+use MHilker\CQRS\Event\Event;
+use MHilker\CQRS\EventStore\StorableEvent;
 
-class TestWasCreatedEvent implements Event
+class TestWasCreatedEvent implements Event, StorableEvent
 {
     private $aggregateId;
 
     private $occurredOn;
 
-    private $payload;
+    private $name;
 
-    private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, array $payload)
+    private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, string $name)
     {
         $this->aggregateId = $aggregateId;
         $this->occurredOn = $occurredOn;
-        $this->payload = $payload;
+        $this->name = $name;
     }
 
-    public static function occur(AggregateId $id): TestWasCreatedEvent
+    public static function occur(AggregateId $id, string $name): TestWasCreatedEvent
     {
         $now = new DateTimeImmutable();
-        return new TestWasCreatedEvent($id, $now, []);
+        return new TestWasCreatedEvent($id, $now, $name);
     }
 
-    public static function restore(array $event): Event
+    public static function restore(array $event): StorableEvent
     {
         $id = new TestId($event['aggregate_id']);
         $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on']);
-        $payload = $event['payload'];
-        return new TestWasCreatedEvent($id, $now, $payload);
+        $name = $event['payload']['name'];
+        return new TestWasCreatedEvent($id, $now, $name);
     }
 
     public function getAggregateId(): AggregateId
@@ -42,9 +43,9 @@ class TestWasCreatedEvent implements Event
         return $this->aggregateId;
     }
 
-    public function getName(): string
+    public function getType(): string
     {
-        return __CLASS__;
+        return 'com.example.event.test_was_created';
     }
 
     public function getOccurredOn(): DateTimeImmutable
@@ -54,6 +55,8 @@ class TestWasCreatedEvent implements Event
 
     public function getPayload(): array
     {
-        return $this->payload;
+        return [
+            'name' => $this->name,
+        ];
     }
 }

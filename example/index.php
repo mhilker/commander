@@ -1,29 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
+use MHilker\CQRS\Aggregate\EventStoreAggregateRepository;
+use MHilker\CQRS\Command\CommandHandlers;
+use MHilker\CQRS\Command\DirectCommandBus;
+use MHilker\CQRS\Event\DirectEventBus;
+use MHilker\CQRS\Event\EventHandlers;
+use MHilker\CQRS\EventStore\PDOEventStore;
+use MHilker\Example\TestAggregate;
+use MHilker\Example\TestCommand;
+use MHilker\Example\TestCommandHandler;
+use MHilker\Example\TestId;
+use MHilker\Example\TestRepository;
+
 require __DIR__ . '/../vendor/autoload.php';
 
-$dsn = 'mysql:host=127.0.0.1;port=3306;dbname=event_store';
+$dsn = 'mysql:host=127.0.0.1;port=3306;dbname=cqrs_example';
 $username = 'root';
-$password = 'password';
+$password = '1234';
 $options = [
     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8;',
     \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
 ];
 
 $pdo = new \PDO($dsn, $username, $password, $options);
+$eventStore = new PDOEventStore($pdo);
 
-$eventHandlers = new \MHilker\CQRS\Event\EventHandlers();
-$eventBus = new \MHilker\CQRS\Event\DirectEventBus($eventHandlers);
+$eventBus = new DirectEventBus(EventHandlers::from());
 
-$aggregateRepository = new \MHilker\EventSourcing\Repository\AggregateRepository($pdo, $eventBus, \MHilker\Example\TestAggregate::class);
+$aggregateRepository = new EventStoreAggregateRepository($eventStore, $eventBus, TestAggregate::class);
 
-$repository = new \MHilker\Example\TestRepository($aggregateRepository);
+$repository = new TestRepository($aggregateRepository);
 
-$commandHandler = new \MHilker\Example\TestCommandHandler($repository);
+$commandHandlers = new CommandHandlers([
+    TestCommand::class => new TestCommandHandler($repository),
+]);
 
-$command = new \MHilker\Example\TestCommand();
-
-$commandHandlers = new \MHilker\CQRS\Command\CommandHandlers();
-$commandHandlers->addHandler($commandHandler, \MHilker\Example\TestCommand::class);
-$commandBus = new \MHilker\CQRS\Command\DirectCommandBus($commandHandlers);
+$command = new TestCommand(TestId::generate(), 'Test');
+$commandBus = new DirectCommandBus($commandHandlers);
 $commandBus->execute($command);

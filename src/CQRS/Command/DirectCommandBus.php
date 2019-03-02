@@ -7,7 +7,7 @@ namespace MHilker\CQRS\Command;
 use MHilker\CQRS\Command\Exception\CommandHandlerNotFoundException;
 use MHilker\CQRS\Command\Exception\InvalidCommandException;
 
-class DirectCommandBus implements CommandBusInterface
+final class DirectCommandBus implements CommandBus
 {
     private $handlers;
 
