@@ -6,7 +6,7 @@ namespace Commander\Stub;
 
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Aggregate\AggregateId;
-use Commander\EventStore\StorableEvent;
+use Commander\Event\Event;
 
 class TestAggregate extends AbstractAggregate
 {
@@ -19,10 +19,10 @@ class TestAggregate extends AbstractAggregate
         return $test;
     }
 
-    protected function apply(StorableEvent $event): void
+    protected function apply(Event $event): void
     {
         switch ($event->getType()) {
-            case 'com.example.test':
+            case 'com.example.event.email_was_added':
                 /** @var TestWasCreatedEvent $event */
                 $this->applyTestCreated($event);
             break;

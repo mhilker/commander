@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Commander\Aggregate;
 
+use Commander\Event\Event;
 use Commander\Event\Events;
-use Commander\EventStore\StorableEvent;
 
 abstract class AbstractAggregate
 {
@@ -25,7 +25,7 @@ abstract class AbstractAggregate
         return new static($events);
     }
 
-    public function record(StorableEvent $event): void
+    public function record(Event $event): void
     {
         $this->apply($event);
         $this->events[] = $event;
@@ -36,7 +36,7 @@ abstract class AbstractAggregate
         return Events::from($this->events);
     }
 
-    abstract protected function apply(StorableEvent $event): void;
+    abstract protected function apply(Event $event): void;
 
     abstract public function getAggregateId(): AggregateId;
 }

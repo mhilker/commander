@@ -63,6 +63,7 @@ final class PDOEventStore implements EventStore
         $events = StorableEvents::from();
 
         while ($row = $statement->fetch()) {
+            // TODO: klassen Mapping
             $class = $row['event_type'];
             $event = $class::restore($row);
             $events->add($event);
