@@ -11,22 +11,22 @@ use Commander\Event\DirectEventBus;
 use Commander\Event\EventHandlers;
 use Commander\Event\Events;
 use Commander\EventStore\PDOEventStore;
-use Commander\Stub\TestAggregate;
-use Commander\Stub\TestCommand;
-use Commander\Stub\TestCommandHandler;
-use Commander\Stub\TestEventHandler;
-use Commander\Stub\TestId;
-use Commander\Stub\TestRepository;
-use Commander\Stub\TestWasCreatedEvent;
+use Commander\Stub\Aggregate\TestAggregate;
+use Commander\Stub\Command\CreateTestCommand;
+use Commander\Stub\Command\CreateTestCommandHandler;
+use Commander\Stub\Event\TestEventHandler;
+use Commander\Stub\Aggregate\TestId;
+use Commander\Stub\Aggregate\TestRepository;
+use Commander\Stub\Event\TestWasCreatedEvent;
 use PHPUnit\Framework\TestCase;
 
 class EndToEndTest extends TestCase
 {
     public function test(): void
     {
-        $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=cqrs_example';
+        $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=event_store';
         $username = 'root';
-        $password = '1234';
+        $password = 'password';
         $options = [
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8;',
             \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
@@ -43,14 +43,13 @@ class EndToEndTest extends TestCase
         ]));
 
         $aggregateRepository = new EventStoreAggregateRepository($eventStore, $eventBus, TestAggregate::class);
-
         $repository = new TestRepository($aggregateRepository);
 
         $commandHandlers = new CommandHandlers([
-            TestCommand::class => new TestCommandHandler($repository),
+            CreateTestCommand::class => new CreateTestCommandHandler($repository),
         ]);
 
-        $command = new TestCommand(TestId::generate(), 'Test');
+        $command = new CreateTestCommand(TestId::generate(), 'Test');
         $commandBus = new DirectCommandBus($commandHandlers);
         $commandBus->execute($command);
     }

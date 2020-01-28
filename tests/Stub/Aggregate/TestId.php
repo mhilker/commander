@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub;
+namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AggregateId;
 

@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub;
+namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
+use Commander\Stub\Event\NameWasChangedEvent;
+use Commander\Stub\Event\TestWasCreatedEvent;
 
 class TestAggregate extends AbstractAggregate
 {

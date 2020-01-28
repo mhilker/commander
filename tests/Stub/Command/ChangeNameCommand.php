@@ -6,7 +6,7 @@ namespace Commander\Stub\Command;
 
 use Commander\Stub\Aggregate\TestId;
 
-class CreateTestCommand
+class ChangeNameCommand
 {
     private $id;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub;
+namespace Commander\Stub\Event;
 
 use Commander\Event\EventHandler;
 use Commander\Event\Events;

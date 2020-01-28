@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Command\CreateTestCommand;
-use Commander\Stub\Aggregate\TestAggregate;
+use Commander\Stub\Command\ChangeNameCommand;
 use Commander\Stub\Aggregate\TestRepository;
 
-class CreateTestCommandHandler
+class ChangeNameCommandHandler
 {
     private $repository;
 
@@ -17,12 +16,13 @@ class CreateTestCommandHandler
         $this->repository = $repository;
     }
 
-    public function __invoke(CreateTestCommand $command): void
+    public function __invoke(ChangeNameCommand $command): void
     {
         $id = $command->getId();
         $name = $command->getName();
 
-        $test = TestAggregate::create($id, $name);
+        $test = $this->repository->load($id);
+        $test->changeName($name);
 
         $this->repository->save($test);
     }
