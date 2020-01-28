@@ -19,5 +19,10 @@
         "psr-4": {
             "Commander\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commander\\": "tests/"
+        }
     }
 }
