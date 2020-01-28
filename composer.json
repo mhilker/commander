@@ -9,11 +9,17 @@
             "email": "maikhilker89@gmail.com"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "php": "^7.4",
         "ext-pdo": "*",
         "ext-json": "*",
         "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
     },
     "autoload": {
         "psr-4": {
@@ -24,8 +30,5 @@
         "psr-4": {
             "Commander\\": "tests/"
         }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.5"
     }
 }
