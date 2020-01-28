@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Commander\EventStore;
 
 use Commander\Aggregate\AggregateId;
+use Commander\EventStore\Exception\EventStoreException;
 use PDO;
 
 final class PDOEventStore implements EventStore
@@ -24,8 +25,10 @@ final class PDOEventStore implements EventStore
 
             foreach ($events as $event) {
                 $sql = <<<QUERY
-                    INSERT INTO events (aggregate_id, occurred_on, event_type, payload) 
-                    VALUES (:aggregate_id, :occurred_on, :event_type, :payload);
+                    INSERT INTO 
+                        events (aggregate_id, occurred_on, event_type, payload) 
+                    VALUES 
+                        (:aggregate_id, :occurred_on, :event_type, :payload);
                 QUERY;
 
                 $stmt = $this->pdo->prepare($sql);
@@ -33,22 +36,25 @@ final class PDOEventStore implements EventStore
                     'aggregate_id' => $event->getAggregateId()->asString(),
                     'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
                     'event_type'   => $event->getType(),
-                    'payload'      => json_encode($event->getPayload())
+                    'payload'      => json_encode($event->getPayload(), JSON_THROW_ON_ERROR, 512)
                 ]);
             }
 
             $this->pdo->commit();
         } catch (\Exception $exception) {
-            throw new \Exception('', 0, $exception);
+            throw new EventStoreException('Could not store events.', 0, $exception);
         }
     }
 
     public function load(AggregateId $id): StorableEvents
     {
         $query = <<<QUERY
-            SELECT * 
-            FROM events 
-            WHERE aggregate_id = :aggregate_id;
+            SELECT 
+                * 
+            FROM 
+                events 
+            WHERE 
+                aggregate_id = :aggregate_id;
         QUERY;
 
         $statement = $this->pdo->prepare($query);
@@ -57,14 +63,14 @@ final class PDOEventStore implements EventStore
         ]);
 
         if ($statement->rowCount() === 0) {
-            throw new \Exception();
+            throw new EventStoreException('No events for aggregate found.');
         }
 
         $events = StorableEvents::from();
 
         while ($row = $statement->fetch()) {
-            // TODO: klassen Mapping
-            $class = $row['event_type'];
+            $type = $row['event_type'];
+            // TODO: $class anhand von $type bestimmen
             $event = $class::restore($row);
             $events->add($event);
         }

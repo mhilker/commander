@@ -6,9 +6,5 @@ namespace Commander\Command;
 
 interface CommandBus
 {
-    /**
-     * @param object $command
-     * @return void
-     */
-    public function execute($command): void;
+    public function execute(object $command): void;
 }

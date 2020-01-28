@@ -34,7 +34,7 @@ final class EventStoreAggregateRepository implements AggregateRepository
             $events = $aggregate->getEvents();
             $this->eventStore->store(StorableEvents::from($events));
         } catch (\Exception $exception) {
-            throw new AggregateNotSavedException('', 0, $exception);
+            throw new AggregateNotSavedException('Could not save aggregate', 0, $exception);
         }
 
         $this->eventBus->dispatch($events);
@@ -46,7 +46,7 @@ final class EventStoreAggregateRepository implements AggregateRepository
             $events = $this->eventStore->load($id);
             return $this->aggregateClass::from($events);
         } catch (\Exception $exception) {
-            throw new AggregateNotFoundException('', 0, $exception);
+            throw new AggregateNotFoundException('Could not load aggregate', 0, $exception);
         }
     }
 }
