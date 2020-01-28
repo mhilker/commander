@@ -7,6 +7,7 @@ namespace Commander\Stub;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
+use Commander\Stub\Aggregate\TestId;
 use DateTimeImmutable;
 
 class TestWasCreatedEvent implements Event, StorableEvent

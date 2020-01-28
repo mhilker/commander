@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Commander\Stub;
 
-class TestCommand
+class CreateTestCommand
 {
     private $id;
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Commander\Stub;
 
 use Commander\Aggregate\AggregateRepository;
+use Commander\Stub\Aggregate\TestAggregate;
+use Commander\Stub\Aggregate\TestId;
 
 class TestRepository
 {

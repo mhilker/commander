@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Commander\Stub;
 
-class TestCommandHandler
+class CreateTestCommandHandler
 {
     private $repository;
 
@@ -13,13 +13,13 @@ class TestCommandHandler
         $this->repository = $repository;
     }
 
-    public function __invoke(TestCommand $command): void
+    public function __invoke(CreateTestCommand $command): void
     {
         $id = $command->getId();
         $name = $command->getName();
 
-        $entity = TestAggregate::create($id, $name);
+        $test = TestAggregate::create($id, $name);
 
-        $this->repository->save($entity);
+        $this->repository->save($test);
     }
 }

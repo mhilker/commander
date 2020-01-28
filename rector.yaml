@@ -1,0 +1,11 @@
+# docker run -v $(pwd):/project rector/rector:latest process /project/src --config /project/rector.yaml
+parameters:
+  # https://github.com/rectorphp/rector/blob/master/docs/AllRectorsOverview.md
+  sets:
+    - 'code-quality'
+    - 'php71'
+    - 'php72'
+    - 'php73'
+    - 'php74'
+  autoload_paths:
+    - '/project/vendor/autoload.php'
