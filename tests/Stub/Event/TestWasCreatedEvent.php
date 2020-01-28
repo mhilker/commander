@@ -12,11 +12,13 @@ use DateTimeImmutable;
 
 class TestWasCreatedEvent implements Event, StorableEvent
 {
-    private $aggregateId;
+    public const TOPIC = 'com.example.event.test_was_created';
 
-    private $occurredOn;
+    private AggregateId $aggregateId;
 
-    private $name;
+    private DateTimeImmutable $occurredOn;
+
+    private string $name;
 
     private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, string $name)
     {
@@ -46,7 +48,7 @@ class TestWasCreatedEvent implements Event, StorableEvent
 
     public function getType(): string
     {
-        return 'com.example.event.test_was_created';
+        return self::TOPIC;
     }
 
     public function getOccurredOn(): DateTimeImmutable
@@ -59,5 +61,10 @@ class TestWasCreatedEvent implements Event, StorableEvent
         return [
             'name' => $this->name,
         ];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

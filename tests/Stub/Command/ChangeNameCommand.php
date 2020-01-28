@@ -8,9 +8,9 @@ use Commander\Stub\Aggregate\TestId;
 
 class ChangeNameCommand
 {
-    private $id;
+    private TestId $id;
 
-    private $name;
+    private string $name;
 
     public function __construct(TestId $id, string $name)
     {

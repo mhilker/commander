@@ -10,8 +10,7 @@ use PDO;
 
 final class PDOEventStore implements EventStore
 {
-    /** @var PDO */
-    private $pdo;
+    private PDO $pdo;
 
     public function __construct(PDO $pdo)
     {

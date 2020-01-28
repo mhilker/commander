@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Command\ChangeNameCommand;
 use Commander\Stub\Aggregate\TestRepository;
 
 class ChangeNameCommandHandler
 {
-    private $repository;
+    private TestRepository $repository;
 
     public function __construct(TestRepository $repository)
     {

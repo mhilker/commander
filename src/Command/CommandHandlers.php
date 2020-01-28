@@ -9,7 +9,7 @@ use Commander\Command\Exception\InvalidCommandClassException;
 
 final class CommandHandlers
 {
-    private $handlers = [];
+    private array $handlers = [];
 
     public function __construct(array $handlers)
     {
@@ -20,8 +20,8 @@ final class CommandHandlers
 
     public function add(string $commandClass, callable $commandHandler): void
     {
-        if (class_exists($commandClass) === false) {
-            throw new InvalidCommandClassException('');
+        if (!class_exists($commandClass)) {
+            throw new InvalidCommandClassException('Command does not exists.');
         }
 
         $this->handlers[$commandClass] = $commandHandler;
@@ -29,13 +29,13 @@ final class CommandHandlers
 
     public function has(string $commandClass): bool
     {
-        return isset($this->handlers[$commandClass]) === true;
+        return isset($this->handlers[$commandClass]);
     }
 
     public function getHandlerForCommand(string $commandClass): callable
     {
-        if ($this->has($commandClass) === false) {
-            throw new CommandHandlerNotFoundException('');
+        if (!$this->has($commandClass)) {
+            throw new CommandHandlerNotFoundException('Could not find handler for command');
         }
 
         return $this->handlers[$commandClass];

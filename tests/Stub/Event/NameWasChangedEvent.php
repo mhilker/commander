@@ -8,16 +8,17 @@ use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
 use Commander\Stub\Aggregate\TestId;
-use Commander\Stub\Event\TestWasCreatedEvent;
 use DateTimeImmutable;
 
 class NameWasChangedEvent implements Event, StorableEvent
 {
-    private $aggregateId;
+    public const TOPIC = 'com.example.event.name_was_changed';
 
-    private $occurredOn;
+    private AggregateId $aggregateId;
 
-    private $name;
+    private \DateTimeImmutable $occurredOn;
+
+    private string $name;
 
     private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, string $name)
     {
@@ -47,7 +48,7 @@ class NameWasChangedEvent implements Event, StorableEvent
 
     public function getType(): string
     {
-        return 'com.example.event.name_was_changed';
+        return self::TOPIC;
     }
 
     public function getOccurredOn(): DateTimeImmutable
@@ -60,5 +61,10 @@ class NameWasChangedEvent implements Event, StorableEvent
         return [
             'name' => $this->name,
         ];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

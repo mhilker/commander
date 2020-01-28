@@ -11,7 +11,7 @@ use Traversable;
 
 final class Events implements IteratorAggregate, Countable
 {
-    private $events = [];
+    private array $events = [];
 
     private function __construct(iterable $events)
     {

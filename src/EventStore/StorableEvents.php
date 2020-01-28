@@ -10,7 +10,7 @@ use Traversable;
 
 final class StorableEvents implements IteratorAggregate
 {
-    private $events = [];
+    private array $events = [];
 
     public function __construct(iterable $events)
     {

@@ -8,12 +8,12 @@ use Commander\Aggregate\AggregateId;
 
 class TestId implements AggregateId
 {
-    private $id;
+    private string $id;
 
     public function __construct(string $id)
     {
         if ($id === '') {
-            throw new \Exception();
+            throw new \Exception('ID must not be empty.');
         }
         $this->id = $id;
     }

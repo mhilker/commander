@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AggregateRepository;
-use Commander\Stub\Aggregate\TestAggregate;
-use Commander\Stub\Aggregate\TestId;
 
 class TestRepository
 {
-    private $repository;
+    private AggregateRepository $repository;
 
     public function __construct(AggregateRepository $repository)
     {

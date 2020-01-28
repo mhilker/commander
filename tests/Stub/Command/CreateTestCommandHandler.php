@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Command\CreateTestCommand;
 use Commander\Stub\Aggregate\TestAggregate;
 use Commander\Stub\Aggregate\TestRepository;
 
 class CreateTestCommandHandler
 {
-    private $repository;
+    private TestRepository $repository;
 
     public function __construct(TestRepository $repository)
     {

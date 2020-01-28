@@ -12,9 +12,9 @@ use Commander\Stub\Event\TestWasCreatedEvent;
 
 class TestAggregate extends AbstractAggregate
 {
-    private $aggregateId;
+    private AggregateId $aggregateId;
 
-    private $name;
+    private string $name;
 
     public static function create(AggregateId $id, string $name): TestAggregate
     {
@@ -25,7 +25,7 @@ class TestAggregate extends AbstractAggregate
 
     public function changeName(string $newName): void
     {
-        if ($this->name !== $newName) {
+        if ($newName !== $this->name) {
             $this->record(NameWasChangedEvent::occur($this->aggregateId, $newName));
         }
     }
@@ -33,9 +33,13 @@ class TestAggregate extends AbstractAggregate
     protected function apply(Event $event): void
     {
         switch ($event->getType()) {
-            case 'com.example.event.test_was_created':
+            case TestWasCreatedEvent::TOPIC:
                 /** @var TestWasCreatedEvent $event */
                 $this->applyTestCreated($event);
+            break;
+            case NameWasChangedEvent::TOPIC:
+                /** @var NameWasChangedEvent $event */
+                $this->applyNameChanged($event);
             break;
         }
     }

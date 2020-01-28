@@ -9,17 +9,15 @@ use Commander\Aggregate\Exception\AggregateNotSavedException;
 use Commander\Event\EventBus;
 use Commander\EventStore\EventStore;
 use Commander\EventStore\StorableEvents;
+use Exception;
 
 final class EventStoreAggregateRepository implements AggregateRepository
 {
-    /** @var EventStore */
-    private $eventStore;
+    private EventStore $eventStore;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
-    /** @var string */
-    private $aggregateClass;
+    private string $aggregateClass;
 
     public function __construct(EventStore $eventStore, EventBus $eventBus, string $aggregateClass)
     {
@@ -33,7 +31,7 @@ final class EventStoreAggregateRepository implements AggregateRepository
         try {
             $events = $aggregate->getEvents();
             $this->eventStore->store(StorableEvents::from($events));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw new AggregateNotSavedException('Could not save aggregate', 0, $exception);
         }
 
@@ -45,7 +43,7 @@ final class EventStoreAggregateRepository implements AggregateRepository
         try {
             $events = $this->eventStore->load($id);
             return $this->aggregateClass::from($events);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw new AggregateNotFoundException('Could not load aggregate', 0, $exception);
         }
     }

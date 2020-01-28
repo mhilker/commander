@@ -9,7 +9,7 @@ use Commander\Event\Events;
 
 abstract class AbstractAggregate
 {
-    private $events = [];
+    private array $events = [];
 
     protected function __construct(?Events $events)
     {

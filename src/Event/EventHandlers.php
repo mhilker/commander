@@ -10,7 +10,7 @@ use Traversable;
 
 final class EventHandlers implements IteratorAggregate
 {
-    private $handlers = [];
+    private array $handlers = [];
 
     private function __construct(iterable $handlers)
     {
