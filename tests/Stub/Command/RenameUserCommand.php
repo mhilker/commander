@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Aggregate\TestId;
+use Commander\Stub\Aggregate\UserId;
 
-class ChangeNameCommand
+class RenameUserCommand
 {
-    private TestId $id;
+    private UserId $id;
 
     private string $name;
 
-    public function __construct(TestId $id, string $name)
+    public function __construct(UserId $id, string $name)
     {
         $this->id = $id;
         $this->name = $name;
     }
 
-    public function getId(): TestId
+    public function getId(): UserId
     {
         return $this->id;
     }

@@ -11,31 +11,31 @@ use Commander\Event\EventHandlers;
 use Commander\Event\Events;
 use Commander\EventStore\EventTopicMap;
 use Commander\EventStore\PDOEventStore;
-use Commander\Stub\Aggregate\TestId;
-use Commander\Stub\Aggregate\TestRepository;
-use Commander\Stub\Command\ChangeNameCommand;
-use Commander\Stub\Command\ChangeNameCommandHandler;
-use Commander\Stub\Command\CreateTestCommand;
-use Commander\Stub\Command\CreateTestCommandHandler;
-use Commander\Stub\Event\TestNameWasChangedEvent;
-use Commander\Stub\Event\TestEventHandler;
-use Commander\Stub\Event\TestWasCreatedEvent;
-use Commander\Stub\EventStore\TestEventStoreAggregateRepository;
+use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\Aggregate\UserRepository;
+use Commander\Stub\Command\RenameUserCommand;
+use Commander\Stub\Command\RenameUserCommandHandler;
+use Commander\Stub\Command\RegisterUserCommand;
+use Commander\Stub\Command\RegisterUserCommandHandler;
+use Commander\Stub\Event\UserRenamedEvent;
+use Commander\Stub\Event\StubEventHandler;
+use Commander\Stub\Event\UserRegisteredEvent;
+use Commander\Stub\EventStore\UserEventStoreAggregateRepository;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
 class EndToEndTest extends TestCase
 {
-    public function test(): void
+    public function testRegistersUser(): void
     {
         $callable = function (Events $events) {
             $this->assertCount(1, $events);
-            $this->assertContainsOnlyInstancesOf(TestWasCreatedEvent::class, $events);
+            $this->assertContainsOnlyInstancesOf(UserRegisteredEvent::class, $events);
         };
 
         $map = [
-            TestWasCreatedEvent::TOPIC => TestWasCreatedEvent::class,
-            TestNameWasChangedEvent::TOPIC => TestNameWasChangedEvent::class,
+            UserRegisteredEvent::TOPIC => UserRegisteredEvent::class,
+            UserRenamedEvent::TOPIC => UserRenamedEvent::class,
         ];
 
         $pdo        = $this->createPDO();
@@ -44,15 +44,15 @@ class EndToEndTest extends TestCase
         $repository = $this->createRepository($eventStore, $eventBus);
         $commandBus = $this->createCommandBus($repository);
 
-        $command = new CreateTestCommand(TestId::generate(), 'Test');
+        $command = new RegisterUserCommand(UserId::generate(), 'Test');
         $commandBus->execute($command);
     }
 
-    private function createCommandBus(TestRepository $repository): DirectCommandBus
+    private function createCommandBus(UserRepository $repository): DirectCommandBus
     {
         $commandHandlers = new CommandHandlers([
-            CreateTestCommand::class => new CreateTestCommandHandler($repository),
-            ChangeNameCommand::class => new ChangeNameCommandHandler($repository),
+            RegisterUserCommand::class => new RegisterUserCommandHandler($repository),
+            RenameUserCommand::class => new RenameUserCommandHandler($repository),
         ]);
 
         return new DirectCommandBus($commandHandlers);
@@ -60,7 +60,7 @@ class EndToEndTest extends TestCase
 
     private function createEventBus(callable $callable): DirectEventBus
     {
-        $handler = new TestEventHandler($callable);
+        $handler = new StubEventHandler($callable);
 
         $handlers = EventHandlers::from([
             $handler,
@@ -69,10 +69,10 @@ class EndToEndTest extends TestCase
         return new DirectEventBus($handlers);
     }
 
-    private function createRepository(PDOEventStore $eventStore, DirectEventBus $eventBus): TestRepository
+    private function createRepository(PDOEventStore $eventStore, DirectEventBus $eventBus): UserRepository
     {
-        $aggregateRepository = new TestEventStoreAggregateRepository($eventStore, $eventBus);
-        return new TestRepository($aggregateRepository);
+        $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $eventBus);
+        return new UserRepository($aggregateRepository);
     }
 
     private function createEventStore(PDO $pdo, array $map): PDOEventStore

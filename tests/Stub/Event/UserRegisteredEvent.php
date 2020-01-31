@@ -7,12 +7,12 @@ namespace Commander\Stub\Event;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
-use Commander\Stub\Aggregate\TestId;
+use Commander\Stub\Aggregate\UserId;
 use DateTimeImmutable;
 
-class TestNameWasChangedEvent implements Event, StorableEvent
+class UserRegisteredEvent implements Event, StorableEvent
 {
-    public const TOPIC = 'com.example.event.test_name_was_changed';
+    public const TOPIC = 'com.example.event.user_registered';
 
     private AggregateId $aggregateId;
 
@@ -27,18 +27,18 @@ class TestNameWasChangedEvent implements Event, StorableEvent
         $this->name = $name;
     }
 
-    public static function occur(AggregateId $id, string $name): TestWasCreatedEvent
+    public static function occur(AggregateId $id, string $name): UserRegisteredEvent
     {
         $now = new DateTimeImmutable();
-        return new TestNameWasChangedEvent($id, $now, $name);
+        return new UserRegisteredEvent($id, $now, $name);
     }
 
     public static function restore(array $event): StorableEvent
     {
-        $id = new TestId($event['aggregate_id']);
+        $id = UserId::from($event['aggregate_id']);
         $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on']);
         $name = $event['payload']['name'];
-        return new TestNameWasChangedEvent($id, $now, $name);
+        return new UserRegisteredEvent($id, $now, $name);
     }
 
     public function getAggregateId(): AggregateId

@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AggregateId;
-use Commander\Stub\Aggregate\Exception\TestIdInvalidException;
+use Commander\Stub\Aggregate\Exception\UserIdInvalidException;
 
-class TestId implements AggregateId
+class UserId implements AggregateId
 {
     private string $id;
 
     private function __construct(string $id)
     {
         if ($id === '') {
-            throw new TestIdInvalidException('ID must not be empty.');
+            throw new UserIdInvalidException('ID must not be empty.');
         }
         $this->id = $id;
     }
@@ -24,7 +24,7 @@ class TestId implements AggregateId
         return new self($id);
     }
 
-    public static function generate(): TestId
+    public static function generate(): UserId
     {
         return new self(self::v4());
     }

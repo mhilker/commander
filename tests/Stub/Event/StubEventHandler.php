@@ -7,7 +7,7 @@ namespace Commander\Stub\Event;
 use Commander\Event\EventHandler;
 use Commander\Event\Events;
 
-class TestEventHandler implements EventHandler
+class StubEventHandler implements EventHandler
 {
     private $callback;
 

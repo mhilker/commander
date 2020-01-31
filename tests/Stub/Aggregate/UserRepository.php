@@ -6,7 +6,7 @@ namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AggregateRepository;
 
-class TestRepository
+class UserRepository
 {
     private AggregateRepository $repository;
 
@@ -15,12 +15,12 @@ class TestRepository
         $this->repository = $repository;
     }
 
-    public function save(TestAggregate $test): void
+    public function save(UserAggregate $user): void
     {
-        $this->repository->save($test);
+        $this->repository->save($user);
     }
 
-    public function load(TestId $id): TestAggregate
+    public function load(UserId $id): UserAggregate
     {
         return $this->repository->load($id);
     }
