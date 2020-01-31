@@ -41,6 +41,6 @@ final class UserName
 
     public function notEqual(UserName $name): bool
     {
-        return $this->equal($name) === false;
+        return !$this->equal($name);
     }
 }
