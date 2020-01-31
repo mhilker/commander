@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Commander;
 
 use Commander\Event\Event;
+use Commander\Event\SplQueueEventPublisher;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
@@ -41,8 +42,9 @@ class SimpleEventsTest extends AbstractTestCase
 
         $pdo = $this->createPDO();
         $eventStore = $this->createEventStore($pdo, $events);
-        $eventBus = $this->createEventBus($eventHandler1, $eventHandler2);
-        $repository = $this->createRepository($eventStore, $eventBus);
+        $eventPublisher = new SplQueueEventPublisher();
+        $eventBus = $this->createEventBus($eventPublisher, $eventHandler1, $eventHandler2);
+        $repository = $this->createRepository($eventStore, $eventPublisher);
 
         $commands = [
             RegisterUserCommand::class => new RegisterUserCommandHandler($repository),

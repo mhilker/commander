@@ -26,29 +26,31 @@ class UserRenamedEvent implements Event, StorableEvent
 
     private UserName $name;
 
-    private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, UserName $name)
+    private function __construct(UUID $id, AggregateId $aggregateId, DateTimeImmutable $occurredOn, UserName $name)
     {
-        $this->id = new UUIDImpl();
+        $this->id = $id;
         $this->aggregateId = $aggregateId;
         $this->occurredOn = $occurredOn;
         $this->name = $name;
     }
 
-    public static function occur(AggregateId $id, UserName $name): self
+    public static function occur(AggregateId $userId, UserName $name): self
     {
+        $id = new UUIDImpl();
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-        return new self($id, $now, $name);
+        return new self($id, $userId, $now, $name);
     }
 
     public static function restore(array $event): StorableEvent
     {
         $payload = json_decode($event['payload'], true, 512, JSON_THROW_ON_ERROR);
 
-        $id = UserId::from($event['aggregate_id']);
+        $id = new UUIDImpl($event['event_id']);
+        $userId = UserId::from($event['aggregate_id']);
         $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on'], new DateTimeZone('UTC'));
         $name = UserName::from($payload['name']);
 
-        return new self($id, $now, $name);
+        return new self($id, $userId, $now, $name);
     }
 
     public function getId(): UUID
@@ -81,5 +83,10 @@ class UserRenamedEvent implements Event, StorableEvent
     public function getName(): UserName
     {
         return $this->name;
+    }
+
+    public function getVersion(): int
+    {
+        return 1;
     }
 }

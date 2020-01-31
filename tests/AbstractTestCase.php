@@ -26,18 +26,18 @@ abstract class AbstractTestCase extends TestCase
         return new DirectCommandBus($commandHandlers);
     }
 
-    protected function createEventBus(callable ...$callableList): DirectEventBus
+    protected function createEventBus(EventPublisher $eventPublisher, callable ...$callableList): DirectEventBus
     {
         $handler = new StubEventHandler(...$callableList);
         $handlers = EventHandlers::from([
             $handler,
         ]);
-        return new DirectEventBus($handlers);
+        return new DirectEventBus($handlers, $eventPublisher);
     }
 
-    protected function createRepository(EventStore $eventStore, EventPublisher $eventBus): AggregateUserRepository
+    protected function createRepository(EventStore $eventStore, EventPublisher $publisher): AggregateUserRepository
     {
-        $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $eventBus);
+        $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $publisher);
         return new AggregateUserRepository($aggregateRepository);
     }
 

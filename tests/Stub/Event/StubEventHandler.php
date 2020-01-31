@@ -22,7 +22,9 @@ class StubEventHandler implements EventHandler
 
     public function handle(Event $event): void
     {
-        $callable = $this->queue->dequeue();
-        $callable($event);
+        if ($this->queue->count() > 0) {
+            $callable = $this->queue->dequeue();
+            $callable($event);
+        }
     }
 }

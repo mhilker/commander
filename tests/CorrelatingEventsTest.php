@@ -8,6 +8,7 @@ use Commander\Command\CorrelatingCommandBus;
 use Commander\Event\CorrelatingDirectEventBus;
 use Commander\Event\Event;
 use Commander\Event\EventHandlers;
+use Commander\Event\SplQueueEventPublisher;
 use Commander\EventStore\CorrelatingPDOEventStore;
 use Commander\EventStore\EventTopicMap;
 use Commander\Stub\Aggregate\UserId;
@@ -46,16 +47,22 @@ class CorrelatingEventsTest extends AbstractTestCase
             UserRenamedEvent::TOPIC => UserRenamedEvent::class,
         ];
 
+
         $pdo = $this->createPDO();
         $eventStore = new CorrelatingPDOEventStore($pdo, new EventTopicMap($events));
+
+        $eventPublisher = new SplQueueEventPublisher();
+        $repository = $this->createRepository($eventStore, $eventPublisher);
+
         $eventBus = new CorrelatingDirectEventBus(
             EventHandlers::from([
                 new StubEventHandler($eventHandler1, $eventHandler2),
                 new DisableUsersWithBlacklistedNamesPolicy($repository),
             ]),
-            $eventStore
+            $eventStore,
+            $eventPublisher
         );
-        $repository = $this->createRepository($eventStore, $eventBus);
+        $repository = $this->createRepository($eventStore, $eventPublisher);
 
         $commands = [
             RegisterUserCommand::class => new RegisterUserCommandHandler($repository),
@@ -86,6 +93,10 @@ class CorrelatingEventsTest extends AbstractTestCase
         $commandBus->execute(new RenameUserCommand(
             UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
             UserName::from('Test Tester'),
+        ));
+        $commandBus->execute(new RenameUserCommand(
+            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserName::from('Test'),
         ));
 
         $eventBus->dispatch();

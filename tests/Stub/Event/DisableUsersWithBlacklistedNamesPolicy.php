@@ -7,7 +7,6 @@ namespace Commander\Stub\Event;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\Event\EventHandler;
-use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Aggregate\UserRepository;
 

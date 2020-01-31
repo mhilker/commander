@@ -5,36 +5,31 @@ declare(strict_types=1);
 namespace Commander\Event;
 
 use Commander\EventStore\CorrelatingEventStore;
-use SplQueue;
 
-final class CorrelatingDirectEventBus implements EventDispatcher, EventPublisher
+final class CorrelatingDirectEventBus implements EventDispatcher
 {
     private EventHandlers $handlers;
 
     private CorrelatingEventStore $eventStore;
 
-    /** @var SplQueue | Events[] */
-    private SplQueue $queue;
+    private SplQueueEventPublisher $publisher;
 
-    public function __construct(EventHandlers $handlers, CorrelatingEventStore $eventStore)
+    public function __construct(EventHandlers $handlers, CorrelatingEventStore $eventStore, SplQueueEventPublisher $publisher)
     {
         $this->handlers = $handlers;
         $this->eventStore = $eventStore;
-        $this->queue = new SplQueue();
-    }
-
-    public function publish(Events $events): void
-    {
-        $this->queue->enqueue($events);
+        $this->publisher = $publisher;
     }
 
     public function dispatch(): void
     {
-        foreach ($this->handlers as $eventHandler) {
-            $events = $this->queue->dequeue();
+        while ($this->publisher->count() > 0) {
+            $events = $this->publisher->dequeue();
             foreach ($events as $event) {
                 $this->eventStore->useCausationId($event->getId());
-                $eventHandler->handle($event);
+                foreach ($this->handlers as $handler) {
+                    $handler->handle($event);
+                }
             }
         }
     }

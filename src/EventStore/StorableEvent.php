@@ -17,4 +17,6 @@ interface StorableEvent extends Event
     public function getOccurredOn(): DateTimeImmutable;
 
     public function getPayload(): array;
+
+    public function getVersion(): int;
 }

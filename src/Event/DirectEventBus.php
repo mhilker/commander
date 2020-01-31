@@ -4,31 +4,26 @@ declare(strict_types=1);
 
 namespace Commander\Event;
 
-use SplQueue;
-
-final class DirectEventBus implements EventDispatcher, EventPublisher
+final class DirectEventBus implements EventDispatcher
 {
     private EventHandlers $handlers;
 
-    private SplQueue $queue;
+    private EventPublisher $publisher;
 
-    public function __construct(EventHandlers $handlers)
+    public function __construct(EventHandlers $handlers, EventPublisher $publisher)
     {
         $this->handlers = $handlers;
-        $this->queue = new SplQueue();
-    }
-
-    public function publish(Events $events): void
-    {
-        $this->queue->enqueue($events);
+        $this->publisher = $publisher;
     }
 
     public function dispatch(): void
     {
-        foreach ($this->handlers as $eventHandler) {
-            $events = $this->queue->dequeue();
+        while ($this->publisher->count() > 0) {
+            $events = $this->publisher->dequeue();
             foreach ($events as $event) {
-                $eventHandler->handle($event);
+                foreach ($this->handlers as $handler) {
+                    $handler->handle($event);
+                }
             }
         }
     }

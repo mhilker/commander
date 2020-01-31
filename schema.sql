@@ -1,6 +1,7 @@
 CREATE TABLE `simple_events`
 (
     `id`           int(11) unsigned                                              NOT NULL AUTO_INCREMENT,
+    `event_id`     char(36) COLLATE utf8mb4_general_ci                           NOT NULL,
     `aggregate_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci     NOT NULL,
     `occurred_on`  datetime                                                      NOT NULL,
     `topic`        varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -8,6 +9,7 @@ CREATE TABLE `simple_events`
     PRIMARY KEY (`id`),
     KEY `idx_aggregate-id_topic` (`aggregate_id`, `topic`)
 ) ENGINE = InnoDB
+  AUTO_INCREMENT = 2
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
 

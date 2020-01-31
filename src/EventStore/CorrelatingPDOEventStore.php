@@ -58,7 +58,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
 
             foreach ($events as $event) {
                 $statement->execute([
-                    'event_id'       => shell_exec('uuid -v4'),
+                    'event_id'       => $event->getId()->asString(),
                     'correlation_id' => $this->currentCorrelationId->asString(),
                     'causation_id'   => $this->currentCausationId->asString(),
                     'aggregate_id'   => $event->getAggregateId()->asString(),
