@@ -7,8 +7,8 @@ namespace Commander\Stub\Aggregate;
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
-use Commander\Stub\Event\UserRenamedEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
+use Commander\Stub\Event\UserRenamedEvent;
 
 class UserAggregate extends AbstractAggregate
 {

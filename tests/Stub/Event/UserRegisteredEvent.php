@@ -9,6 +9,7 @@ use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
 use Commander\Stub\Aggregate\UserId;
 use DateTimeImmutable;
+use DateTimeZone;
 
 class UserRegisteredEvent implements Event, StorableEvent
 {
@@ -27,16 +28,16 @@ class UserRegisteredEvent implements Event, StorableEvent
         $this->name = $name;
     }
 
-    public static function occur(AggregateId $id, string $name): UserRegisteredEvent
+    public static function occur(AggregateId $id, string $name): self
     {
-        $now = new DateTimeImmutable();
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         return new UserRegisteredEvent($id, $now, $name);
     }
 
     public static function restore(array $event): StorableEvent
     {
         $id = UserId::from($event['aggregate_id']);
-        $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on']);
+        $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on'], new DateTimeZone('UTC'));
         $name = $event['payload']['name'];
         return new UserRegisteredEvent($id, $now, $name);
     }
