@@ -15,9 +15,14 @@ use Commander\Stub\Event\UserRenamedEvent;
 
 class EndToEndTest extends AbstractTestCase
 {
+    public function setUp(): void
+    {
+        $this->createPDO()->exec('TRUNCATE TABLE `events`;');
+    }
+
     public function testRegistersUser(): void
     {
-        $callable = function (Events $events) {
+        $eventHandler = function (Events $events) {
             $this->assertCount(1, $events);
             $this->assertContainsOnlyInstancesOf(UserRegisteredEvent::class, $events);
         };
@@ -29,7 +34,7 @@ class EndToEndTest extends AbstractTestCase
 
         $pdo        = $this->createPDO();
         $eventStore = $this->createEventStore($pdo, $events);
-        $eventBus   = $this->createEventBus($callable);
+        $eventBus   = $this->createEventBus($eventHandler);
         $repository = $this->createRepository($eventStore, $eventBus);
 
         $commands = [
@@ -37,7 +42,7 @@ class EndToEndTest extends AbstractTestCase
             RenameUserCommand::class => new RenameUserCommandHandler($repository),
         ];
 
-        $command = new RegisterUserCommand(UserId::generate(), 'Test');
+        $command = new RegisterUserCommand(UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'), 'Test');
 
         $commandBus = $this->createCommandBus($commands);
         $commandBus->execute($command);
