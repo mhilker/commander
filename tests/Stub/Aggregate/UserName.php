@@ -15,7 +15,7 @@ final class UserName
      */
     private function __construct(string $name)
     {
-        if ($name !== '') {
+        if ($name === '') {
             throw new InvalidUserNameException('UserName must not be empty.');
         }
         $this->name = $name;
