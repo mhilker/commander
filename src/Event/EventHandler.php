@@ -6,5 +6,5 @@ namespace Commander\Event;
 
 interface EventHandler
 {
-    public function handle(Events $events): void;
+    public function handle(Event $event): void;
 }

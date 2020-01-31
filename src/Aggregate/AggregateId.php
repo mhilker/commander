@@ -6,5 +6,4 @@ namespace Commander\Aggregate;
 
 interface AggregateId
 {
-    public function asString(): string;
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Event;
 
+use Commander\Event\Event;
 use Commander\Event\EventHandler;
-use Commander\Event\Events;
 use SplQueue;
 
 class StubEventHandler implements EventHandler
@@ -20,9 +20,9 @@ class StubEventHandler implements EventHandler
         }
     }
 
-    public function handle(Events $events): void
+    public function handle(Event $event): void
     {
         $callable = $this->queue->dequeue();
-        $callable($events);
+        $callable($event);
     }
 }

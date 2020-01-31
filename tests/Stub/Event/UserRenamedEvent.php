@@ -9,12 +9,16 @@ use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
+use Commander\UUID;
+use Commander\UUIDImpl;
 use DateTimeImmutable;
 use DateTimeZone;
 
 class UserRenamedEvent implements Event, StorableEvent
 {
     public const TOPIC = 'com.example.event.user_renamed';
+
+    private UUID $id;
 
     private AggregateId $aggregateId;
 
@@ -24,6 +28,7 @@ class UserRenamedEvent implements Event, StorableEvent
 
     private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, UserName $name)
     {
+        $this->id = new UUIDImpl();
         $this->aggregateId = $aggregateId;
         $this->occurredOn = $occurredOn;
         $this->name = $name;
@@ -32,7 +37,7 @@ class UserRenamedEvent implements Event, StorableEvent
     public static function occur(AggregateId $id, UserName $name): self
     {
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-        return new UserRenamedEvent($id, $now, $name);
+        return new self($id, $now, $name);
     }
 
     public static function restore(array $event): StorableEvent
@@ -43,7 +48,12 @@ class UserRenamedEvent implements Event, StorableEvent
         $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on'], new DateTimeZone('UTC'));
         $name = UserName::from($payload['name']);
 
-        return new UserRenamedEvent($id, $now, $name);
+        return new self($id, $now, $name);
+    }
+
+    public function getId(): UUID
+    {
+        return $this->id;
     }
 
     public function getAggregateId(): AggregateId

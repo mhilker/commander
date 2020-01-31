@@ -4,28 +4,39 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
+use Commander\Command\Command;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
+use Commander\UUID;
+use Commander\UUIDImpl;
 
-class RenameUserCommand
+class RenameUserCommand implements Command
 {
-    private UserId $id;
+    private UUID $id;
+
+    private UserId $userId;
 
     private UserName $name;
 
-    public function __construct(UserId $id, UserName $name)
+    public function __construct(UserId $userId, UserName $name)
     {
-        $this->id = $id;
+        $this->id = new UUIDImpl();
+        $this->userId = $userId;
         $this->name = $name;
     }
 
-    public function getId(): UserId
+    public function getUserId(): UserId
     {
-        return $this->id;
+        return $this->userId;
     }
 
     public function getName(): UserName
     {
         return $this->name;
+    }
+
+    public function getId(): UUID
+    {
+        return $this->id;
     }
 }

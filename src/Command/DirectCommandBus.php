@@ -18,10 +18,9 @@ final class DirectCommandBus implements CommandBus
     /**
      * @throws CommandHandlerNotFoundException
      */
-    public function execute(object $command): void
+    public function execute(Command $command): void
     {
         $commandClass = get_class($command);
-
         $handler = $this->handlers->getHandlerForCommand($commandClass);
         $handler($command);
     }

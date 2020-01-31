@@ -8,6 +8,8 @@ use Commander\Command\CommandHandlers;
 use Commander\Command\DirectCommandBus;
 use Commander\Event\DirectEventBus;
 use Commander\Event\EventHandlers;
+use Commander\Event\EventPublisher;
+use Commander\EventStore\EventStore;
 use Commander\EventStore\EventTopicMap;
 use Commander\EventStore\PDOEventStore;
 use Commander\Stub\Aggregate\AggregateUserRepository;
@@ -33,7 +35,7 @@ abstract class AbstractTestCase extends TestCase
         return new DirectEventBus($handlers);
     }
 
-    protected function createRepository(PDOEventStore $eventStore, DirectEventBus $eventBus): AggregateUserRepository
+    protected function createRepository(EventStore $eventStore, EventPublisher $eventBus): AggregateUserRepository
     {
         $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $eventBus);
         return new AggregateUserRepository($aggregateRepository);

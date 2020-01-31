@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Commander;
 
-use Commander\Event\Events;
+use Commander\Event\Event;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
@@ -15,11 +15,11 @@ use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
 use Exception;
 
-class EndToEndTest extends AbstractTestCase
+class SimpleEventsTest extends AbstractTestCase
 {
     public function setUp(): void
     {
-        $this->createPDO()->exec('TRUNCATE TABLE `events`;');
+        $this->createPDO()->exec('TRUNCATE TABLE `simple_events`;');
     }
 
     /**
@@ -27,13 +27,11 @@ class EndToEndTest extends AbstractTestCase
      */
     public function testRegistersUser(): void
     {
-        $eventHandler1 = function (Events $events) {
-            $this->assertCount(1, $events);
-            $this->assertContainsOnlyInstancesOf(UserRegisteredEvent::class, $events);
+        $eventHandler1 = function (Event $event) {
+            $this->assertInstanceOf(UserRegisteredEvent::class, $event);
         };
-        $eventHandler2 = function (Events $events) {
-            $this->assertCount(1, $events);
-            $this->assertContainsOnlyInstancesOf(UserRenamedEvent::class, $events);
+        $eventHandler2 = function (Event $event) {
+            $this->assertInstanceOf(UserRenamedEvent::class, $event);
         };
 
         $events = [
@@ -41,9 +39,9 @@ class EndToEndTest extends AbstractTestCase
             UserRenamedEvent::TOPIC => UserRenamedEvent::class,
         ];
 
-        $pdo        = $this->createPDO();
+        $pdo = $this->createPDO();
         $eventStore = $this->createEventStore($pdo, $events);
-        $eventBus   = $this->createEventBus($eventHandler1, $eventHandler2);
+        $eventBus = $this->createEventBus($eventHandler1, $eventHandler2);
         $repository = $this->createRepository($eventStore, $eventBus);
 
         $commands = [
@@ -60,5 +58,23 @@ class EndToEndTest extends AbstractTestCase
             UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
             UserName::from('Don Joe'),
         ));
+        $commandBus->execute(new RegisterUserCommand(
+            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserName::from('John Doe'),
+        ));
+        $commandBus->execute(new RenameUserCommand(
+            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserName::from('Don Joe'),
+        ));
+        $commandBus->execute(new RenameUserCommand(
+            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserName::from('Test Tester'),
+        ));
+        $commandBus->execute(new RenameUserCommand(
+            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserName::from('Test Tester'),
+        ));
+
+        $eventBus->dispatch();
     }
 }

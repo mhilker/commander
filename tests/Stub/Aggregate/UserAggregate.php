@@ -7,6 +7,7 @@ namespace Commander\Stub\Aggregate;
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
+use Commander\Stub\Event\UserDisabledEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
 
@@ -15,6 +16,8 @@ class UserAggregate extends AbstractAggregate
     private AggregateId $aggregateId;
 
     private UserName $name;
+
+    private bool $active;
 
     public static function register(AggregateId $id, UserName $name): UserAggregate
     {
@@ -27,6 +30,7 @@ class UserAggregate extends AbstractAggregate
     {
         $this->aggregateId = $event->getAggregateId();
         $this->name = $event->getName();
+        $this->active = true;
     }
 
     public function rename(UserName $newName): void
@@ -39,6 +43,18 @@ class UserAggregate extends AbstractAggregate
     protected function applyUserRenamed(UserRenamedEvent $event): void
     {
         $this->name = $event->getName();
+    }
+
+    public function disable(): void
+    {
+        if ($this->active) {
+            $this->record(UserDisabledEvent::occur($this->aggregateId));
+        }
+    }
+
+    public function applyUserDisabled(): void
+    {
+        $this->active = false;
     }
 
     protected function apply(Event $event): void

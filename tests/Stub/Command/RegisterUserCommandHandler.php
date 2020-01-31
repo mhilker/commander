@@ -7,6 +7,7 @@ namespace Commander\Stub\Command;
 use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Commander\Stub\Aggregate\UserAggregate;
 use Commander\Stub\Aggregate\UserRepository;
+use Commander\Stub\Command\Exception\UserAlreadyExistsException;
 
 class RegisterUserCommandHandler
 {
@@ -22,8 +23,14 @@ class RegisterUserCommandHandler
      */
     public function __invoke(RegisterUserCommand $command): void
     {
-        $id = $command->getId();
+        $id = $command->getUserId();
         $name = $command->getName();
+
+        // TODO
+//        $user = $this->repository->load($id);
+//        if ($user) {
+//            throw new UserAlreadyExistsException('User already exists.');
+//        }
 
         $user = UserAggregate::register($id, $name);
 

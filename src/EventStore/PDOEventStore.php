@@ -26,15 +26,16 @@ final class PDOEventStore implements EventStore
         try {
             $this->pdo->beginTransaction();
 
-            foreach ($events as $event) {
-                $sql = <<<QUERY
-                    INSERT INTO 
-                        `events` (`aggregate_id`, `occurred_on`, `topic`, `payload`) 
-                    VALUES 
-                        (:aggregate_id, :occurred_on, :topic, :payload);
-                QUERY;
+            $sql = <<<QUERY
+                INSERT INTO 
+                    `simple_events` (`aggregate_id`, `occurred_on`, `topic`, `payload`) 
+                VALUES 
+                    (:aggregate_id, :occurred_on, :topic, :payload);
+            QUERY;
 
-                $stmt = $this->pdo->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
+
+            foreach ($events as $event) {
                 $stmt->execute([
                     'aggregate_id' => $event->getAggregateId()->asString(),
                     'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
@@ -55,7 +56,7 @@ final class PDOEventStore implements EventStore
             SELECT 
                 * 
             FROM 
-                `events` 
+                `simple_events` 
             WHERE 
                 `aggregate_id` = :aggregate_id;
         QUERY;

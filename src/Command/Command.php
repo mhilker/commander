@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Commander\Event;
+namespace Commander\Command;
 
 use Commander\UUID;
 
-interface Event
+interface Command
 {
     public function getId(): UUID;
 
-    public function getTopic(): string;
+    // TODO: Topic?
 }

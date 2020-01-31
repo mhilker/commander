@@ -30,6 +30,9 @@ final class Events implements IteratorAggregate, Countable
         $this->events[] = $event;
     }
 
+    /**
+     * @return Traversable | Event[]
+     */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->events);
