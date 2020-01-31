@@ -8,6 +8,7 @@ use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\EventStore\StorableEvent;
 use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\Aggregate\UserName;
 use DateTimeImmutable;
 use DateTimeZone;
 
@@ -19,16 +20,16 @@ class UserRegisteredEvent implements Event, StorableEvent
 
     private DateTimeImmutable $occurredOn;
 
-    private string $name;
+    private UserName $name;
 
-    private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, string $name)
+    private function __construct(AggregateId $aggregateId, DateTimeImmutable $occurredOn, UserName $name)
     {
         $this->aggregateId = $aggregateId;
         $this->occurredOn = $occurredOn;
         $this->name = $name;
     }
 
-    public static function occur(AggregateId $id, string $name): self
+    public static function occur(AggregateId $id, UserName $name): self
     {
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         return new UserRegisteredEvent($id, $now, $name);
@@ -60,11 +61,11 @@ class UserRegisteredEvent implements Event, StorableEvent
     public function getPayload(): array
     {
         return [
-            'name' => $this->name,
+            'name' => $this->name->asString(),
         ];
     }
 
-    public function getName(): string
+    public function getName(): UserName
     {
         return $this->name;
     }

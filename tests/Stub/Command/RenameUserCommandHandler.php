@@ -18,7 +18,7 @@ class RenameUserCommandHandler
     public function __invoke(RenameUserCommand $command): void
     {
         $id = $command->getId();
-        $name = $command->getName();
+        $name = $command->getNewName();
 
         $user = $this->repository->load($id);
         $user->rename($name);

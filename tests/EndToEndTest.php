@@ -6,12 +6,14 @@ namespace Commander;
 
 use Commander\Event\Events;
 use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
 use Commander\Stub\Command\RegisterUserCommandHandler;
 use Commander\Stub\Command\RenameUserCommand;
 use Commander\Stub\Command\RenameUserCommandHandler;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
+use Exception;
 
 class EndToEndTest extends AbstractTestCase
 {
@@ -20,6 +22,9 @@ class EndToEndTest extends AbstractTestCase
         $this->createPDO()->exec('TRUNCATE TABLE `events`;');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRegistersUser(): void
     {
         $eventHandler = function (Events $events) {
@@ -42,7 +47,10 @@ class EndToEndTest extends AbstractTestCase
             RenameUserCommand::class => new RenameUserCommandHandler($repository),
         ];
 
-        $command = new RegisterUserCommand(UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'), 'Test');
+        $command = new RegisterUserCommand(
+            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
+            UserName::from('Test'),
+        );
 
         $commandBus = $this->createCommandBus($commands);
         $commandBus->execute($command);

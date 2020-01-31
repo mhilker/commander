@@ -14,9 +14,9 @@ class UserAggregate extends AbstractAggregate
 {
     private AggregateId $aggregateId;
 
-    private string $name;
+    private UserName $name;
 
-    public static function register(AggregateId $id, string $name): UserAggregate
+    public static function register(AggregateId $id, UserName $name): UserAggregate
     {
         $user = new self(null);
         $user->record(UserRegisteredEvent::occur($id, $name));
@@ -29,9 +29,9 @@ class UserAggregate extends AbstractAggregate
         $this->name = $event->getName();
     }
 
-    public function rename(string $newName): void
+    public function rename(UserName $newName): void
     {
-        if ($newName !== $this->name) {
+        if ($this->name->notEqual($newName)) {
             $this->record(UserRenamedEvent::occur($this->aggregateId, $newName));
         }
     }

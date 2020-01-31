@@ -6,7 +6,7 @@ namespace Commander\Stub\Aggregate\Exception;
 
 use Exception;
 
-final class InvalidUserIdException extends Exception
+final class InvalidUserNameException extends Exception
 {
 
 }

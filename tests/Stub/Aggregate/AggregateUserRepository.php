@@ -6,7 +6,7 @@ namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AggregateRepository;
 
-class UserRepositoryImpl implements UserRepository
+class AggregateUserRepository implements UserRepository
 {
     private AggregateRepository $repository;
 

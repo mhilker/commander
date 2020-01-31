@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace Commander\Stub\Command;
 
 use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\Aggregate\UserName;
 
 class RenameUserCommand
 {
     private UserId $id;
 
-    private string $name;
+    private UserName $newName;
 
-    public function __construct(UserId $id, string $name)
+    public function __construct(UserId $id, UserName $newName)
     {
         $this->id = $id;
-        $this->name = $name;
+        $this->newName = $newName;
     }
 
     public function getId(): UserId
@@ -23,8 +24,8 @@ class RenameUserCommand
         return $this->id;
     }
 
-    public function getName(): string
+    public function getNewName(): UserName
     {
-        return $this->name;
+        return $this->newName;
     }
 }

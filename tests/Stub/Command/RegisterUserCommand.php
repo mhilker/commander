@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Commander\Stub\Command;
 
 use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\Aggregate\UserName;
 
 class RegisterUserCommand
 {
     private UserId $id;
 
-    private string $name;
+    private UserName $name;
 
-    public function __construct(UserId $id, string $name)
+    public function __construct(UserId $id, UserName $name)
     {
         $this->id = $id;
         $this->name = $name;
@@ -23,7 +24,7 @@ class RegisterUserCommand
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): UserName
     {
         return $this->name;
     }
