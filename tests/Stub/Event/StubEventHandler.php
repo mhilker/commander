@@ -10,20 +10,19 @@ use SplQueue;
 
 class StubEventHandler implements EventHandler
 {
-    private SplQueue $callables;
+    private SplQueue $queue;
 
-    public function __construct(callable ...$callables)
+    public function __construct(callable ...$queue)
     {
-        $this->callables = new SplQueue();
-
-        foreach ($callables as $callable) {
-            $this->callables->enqueue($callable);
+        $this->queue = new SplQueue();
+        foreach ($queue as $callable) {
+            $this->queue->enqueue($callable);
         }
     }
 
     public function handle(Events $events): void
     {
-        $callable = $this->callables->dequeue();
+        $callable = $this->queue->dequeue();
         $callable($events);
     }
 }
