@@ -36,11 +36,11 @@ class TestAggregate extends AbstractAggregate
             case TestWasCreatedEvent::TOPIC:
                 /** @var TestWasCreatedEvent $event */
                 $this->applyTestCreated($event);
-            break;
+                break;
             case TestNameWasChangedEvent::TOPIC:
                 /** @var TestNameWasChangedEvent $event */
                 $this->applyNameChanged($event);
-            break;
+                break;
         }
     }
 
