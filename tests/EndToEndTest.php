@@ -33,39 +33,39 @@ class EndToEndTest extends TestCase
             $this->assertContainsOnlyInstancesOf(UserRegisteredEvent::class, $events);
         };
 
-        $map = [
+        $events = [
             UserRegisteredEvent::TOPIC => UserRegisteredEvent::class,
             UserRenamedEvent::TOPIC => UserRenamedEvent::class,
         ];
 
         $pdo        = $this->createPDO();
-        $eventStore = $this->createEventStore($pdo, $map);
+        $eventStore = $this->createEventStore($pdo, $events);
         $eventBus   = $this->createEventBus($callable);
         $repository = $this->createRepository($eventStore, $eventBus);
-        $commandBus = $this->createCommandBus($repository);
+
+        $commands = [
+            RegisterUserCommand::class => new RegisterUserCommandHandler($repository),
+            RenameUserCommand::class => new RenameUserCommandHandler($repository),
+        ];
+
+        $commandBus = $this->createCommandBus($commands);
 
         $command = new RegisterUserCommand(UserId::generate(), 'Test');
         $commandBus->execute($command);
     }
 
-    private function createCommandBus(UserRepository $repository): DirectCommandBus
+    private function createCommandBus(array $map): DirectCommandBus
     {
-        $commandHandlers = new CommandHandlers([
-            RegisterUserCommand::class => new RegisterUserCommandHandler($repository),
-            RenameUserCommand::class => new RenameUserCommandHandler($repository),
-        ]);
-
+        $commandHandlers = new CommandHandlers($map);
         return new DirectCommandBus($commandHandlers);
     }
 
     private function createEventBus(callable $callable): DirectEventBus
     {
         $handler = new StubEventHandler($callable);
-
         $handlers = EventHandlers::from([
             $handler,
         ]);
-
         return new DirectEventBus($handlers);
     }
 
@@ -90,7 +90,6 @@ class EndToEndTest extends TestCase
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8;',
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
-
         return new PDO($dsn, $username, $password, $options);
     }
 }
