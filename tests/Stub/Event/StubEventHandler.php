@@ -6,18 +6,24 @@ namespace Commander\Stub\Event;
 
 use Commander\Event\EventHandler;
 use Commander\Event\Events;
+use SplQueue;
 
 class StubEventHandler implements EventHandler
 {
-    private $callback;
+    private SplQueue $callables;
 
-    public function __construct(callable $callback)
+    public function __construct(callable ...$callables)
     {
-        $this->callback = $callback;
+        $this->callables = new SplQueue();
+
+        foreach ($callables as $callable) {
+            $this->callables->enqueue($callable);
+        }
     }
 
     public function handle(Events $events): void
     {
-        ($this->callback)($events);
+        $callable = $this->callables->dequeue();
+        $callable($events);
     }
 }

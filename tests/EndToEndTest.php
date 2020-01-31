@@ -27,9 +27,13 @@ class EndToEndTest extends AbstractTestCase
      */
     public function testRegistersUser(): void
     {
-        $eventHandler = function (Events $events) {
+        $eventHandler1 = function (Events $events) {
             $this->assertCount(1, $events);
             $this->assertContainsOnlyInstancesOf(UserRegisteredEvent::class, $events);
+        };
+        $eventHandler2 = function (Events $events) {
+            $this->assertCount(1, $events);
+            $this->assertContainsOnlyInstancesOf(UserRenamedEvent::class, $events);
         };
 
         $events = [
@@ -39,7 +43,7 @@ class EndToEndTest extends AbstractTestCase
 
         $pdo        = $this->createPDO();
         $eventStore = $this->createEventStore($pdo, $events);
-        $eventBus   = $this->createEventBus($eventHandler);
+        $eventBus   = $this->createEventBus($eventHandler1, $eventHandler2);
         $repository = $this->createRepository($eventStore, $eventBus);
 
         $commands = [
@@ -47,12 +51,14 @@ class EndToEndTest extends AbstractTestCase
             RenameUserCommand::class => new RenameUserCommandHandler($repository),
         ];
 
-        $command = new RegisterUserCommand(
-            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
-            UserName::from('Test'),
-        );
-
         $commandBus = $this->createCommandBus($commands);
-        $commandBus->execute($command);
+        $commandBus->execute(new RegisterUserCommand(
+            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
+            UserName::from('John Doe'),
+        ));
+        $commandBus->execute(new RenameUserCommand(
+            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
+            UserName::from('Don Joe'),
+        ));
     }
 }

@@ -11,12 +11,12 @@ class RenameUserCommand
 {
     private UserId $id;
 
-    private UserName $newName;
+    private UserName $name;
 
-    public function __construct(UserId $id, UserName $newName)
+    public function __construct(UserId $id, UserName $name)
     {
         $this->id = $id;
-        $this->newName = $newName;
+        $this->name = $name;
     }
 
     public function getId(): UserId
@@ -24,8 +24,8 @@ class RenameUserCommand
         return $this->id;
     }
 
-    public function getNewName(): UserName
+    public function getName(): UserName
     {
-        return $this->newName;
+        return $this->name;
     }
 }

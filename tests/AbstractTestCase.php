@@ -24,9 +24,9 @@ abstract class AbstractTestCase extends TestCase
         return new DirectCommandBus($commandHandlers);
     }
 
-    protected function createEventBus(callable $callable): DirectEventBus
+    protected function createEventBus(callable ...$callables): DirectEventBus
     {
-        $handler = new StubEventHandler($callable);
+        $handler = new StubEventHandler(...$callables);
         $handlers = EventHandlers::from([
             $handler,
         ]);

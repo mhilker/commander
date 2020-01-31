@@ -37,9 +37,12 @@ class UserRegisteredEvent implements Event, StorableEvent
 
     public static function restore(array $event): StorableEvent
     {
+        $payload = json_decode($event['payload'], true, 512, JSON_THROW_ON_ERROR);
+
         $id = UserId::from($event['aggregate_id']);
         $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on'], new DateTimeZone('UTC'));
-        $name = $event['payload']['name'];
+        $name = UserName::from($payload['name']);
+
         return new UserRegisteredEvent($id, $now, $name);
     }
 
