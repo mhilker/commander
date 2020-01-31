@@ -46,7 +46,7 @@ class TestNameWasChangedEvent implements Event, StorableEvent
         return $this->aggregateId;
     }
 
-    public function getType(): string
+    public function getTopic(): string
     {
         return self::TOPIC;
     }

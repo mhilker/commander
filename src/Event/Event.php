@@ -6,5 +6,5 @@ namespace Commander\Event;
 
 interface Event
 {
-    public function getType(): string;
+    public function getTopic(): string;
 }

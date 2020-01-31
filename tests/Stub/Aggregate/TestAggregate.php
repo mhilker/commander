@@ -32,7 +32,7 @@ class TestAggregate extends AbstractAggregate
 
     protected function apply(Event $event): void
     {
-        switch ($event->getType()) {
+        switch ($event->getTopic()) {
             case TestWasCreatedEvent::TOPIC:
                 /** @var TestWasCreatedEvent $event */
                 $this->applyTestCreated($event);

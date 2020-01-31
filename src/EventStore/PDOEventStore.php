@@ -29,16 +29,16 @@ final class PDOEventStore implements EventStore
             foreach ($events as $event) {
                 $sql = <<<QUERY
                     INSERT INTO 
-                        events (aggregate_id, occurred_on, event_type, payload) 
+                        events (aggregate_id, occurred_on, topic, payload) 
                     VALUES 
-                        (:aggregate_id, :occurred_on, :event_type, :payload);
+                        (:aggregate_id, :occurred_on, :topic, :payload);
                 QUERY;
 
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([
                     'aggregate_id' => $event->getAggregateId()->asString(),
                     'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
-                    'event_type'   => $event->getType(),
+                    'topic'        => $event->getTopic(),
                     'payload'      => json_encode($event->getPayload(), JSON_THROW_ON_ERROR)
                 ]);
             }
