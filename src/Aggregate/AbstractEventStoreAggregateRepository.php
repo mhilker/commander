@@ -7,23 +7,21 @@ namespace Commander\Aggregate;
 use Commander\Aggregate\Exception\AggregateNotFoundException;
 use Commander\Aggregate\Exception\AggregateNotSavedException;
 use Commander\Event\EventBus;
+use Commander\Event\Events;
 use Commander\EventStore\EventStore;
 use Commander\EventStore\StorableEvents;
 use Exception;
 
-final class EventStoreAggregateRepository implements AggregateRepository
+abstract class AbstractEventStoreAggregateRepository implements AggregateRepository
 {
     private EventStore $eventStore;
 
     private EventBus $eventBus;
 
-    private string $aggregateClass;
-
-    public function __construct(EventStore $eventStore, EventBus $eventBus, string $aggregateClass)
+    public function __construct(EventStore $eventStore, EventBus $eventBus)
     {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
-        $this->aggregateClass = $aggregateClass;
     }
 
     public function save(AbstractAggregate $aggregate): void
@@ -42,9 +40,12 @@ final class EventStoreAggregateRepository implements AggregateRepository
     {
         try {
             $events = $this->eventStore->load($id);
-            return $this->aggregateClass::from($events);
+            $events = Events::from($events);
+            return $this->createAggregateWithEvents($events);
         } catch (Exception $exception) {
             throw new AggregateNotFoundException('Could not load aggregate', 0, $exception);
         }
     }
+
+    abstract protected function createAggregateWithEvents(Events $events): AbstractAggregate;
 }

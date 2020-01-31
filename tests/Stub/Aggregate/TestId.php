@@ -18,6 +18,11 @@ class TestId implements AggregateId
         $this->id = $id;
     }
 
+    public static function from(string $id): self
+    {
+        return new self($id);
+    }
+
     public static function generate(): TestId
     {
         return new self(self::v4());

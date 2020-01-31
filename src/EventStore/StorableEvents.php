@@ -29,6 +29,9 @@ final class StorableEvents implements IteratorAggregate
         $this->events[] = $event;
     }
 
+    /**
+     * @return Traversable | StorableEvent[]
+     */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->events);

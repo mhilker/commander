@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Commander;
 
-use Commander\Aggregate\EventStoreAggregateRepository;
 use Commander\Command\CommandHandlers;
 use Commander\Command\DirectCommandBus;
 use Commander\Event\DirectEventBus;
 use Commander\Event\EventHandlers;
 use Commander\Event\Events;
+use Commander\EventStore\EventTopicMap;
 use Commander\EventStore\PDOEventStore;
-use Commander\Stub\Aggregate\TestAggregate;
 use Commander\Stub\Aggregate\TestId;
 use Commander\Stub\Aggregate\TestRepository;
 use Commander\Stub\Command\ChangeNameCommand;
 use Commander\Stub\Command\ChangeNameCommandHandler;
 use Commander\Stub\Command\CreateTestCommand;
 use Commander\Stub\Command\CreateTestCommandHandler;
+use Commander\Stub\Event\TestNameWasChangedEvent;
 use Commander\Stub\Event\TestEventHandler;
 use Commander\Stub\Event\TestWasCreatedEvent;
+use Commander\Stub\EventStore\TestEventStoreAggregateRepository;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
@@ -32,8 +33,13 @@ class EndToEndTest extends TestCase
             $this->assertContainsOnlyInstancesOf(TestWasCreatedEvent::class, $events);
         };
 
+        $map = [
+            TestWasCreatedEvent::TOPIC => TestWasCreatedEvent::class,
+            TestNameWasChangedEvent::TOPIC => TestNameWasChangedEvent::class,
+        ];
+
         $pdo        = $this->createPDO();
-        $eventStore = $this->createEventStore($pdo);
+        $eventStore = $this->createEventStore($pdo, $map);
         $eventBus   = $this->createEventBus($callable);
         $repository = $this->createRepository($eventStore, $eventBus);
         $commandBus = $this->createCommandBus($repository);
@@ -65,13 +71,14 @@ class EndToEndTest extends TestCase
 
     private function createRepository(PDOEventStore $eventStore, DirectEventBus $eventBus): TestRepository
     {
-        $aggregateRepository = new EventStoreAggregateRepository($eventStore, $eventBus, TestAggregate::class);
+        $aggregateRepository = new TestEventStoreAggregateRepository($eventStore, $eventBus);
         return new TestRepository($aggregateRepository);
     }
 
-    private function createEventStore(PDO $pdo): PDOEventStore
+    private function createEventStore(PDO $pdo, array $map): PDOEventStore
     {
-        return new PDOEventStore($pdo);
+        $map = new EventTopicMap($map);
+        return new PDOEventStore($pdo, $map);
     }
 
     private function createPDO(): PDO

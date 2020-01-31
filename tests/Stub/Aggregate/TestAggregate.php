@@ -7,7 +7,7 @@ namespace Commander\Stub\Aggregate;
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
-use Commander\Stub\Event\NameWasChangedEvent;
+use Commander\Stub\Event\TestNameWasChangedEvent;
 use Commander\Stub\Event\TestWasCreatedEvent;
 
 class TestAggregate extends AbstractAggregate
@@ -26,7 +26,7 @@ class TestAggregate extends AbstractAggregate
     public function changeName(string $newName): void
     {
         if ($newName !== $this->name) {
-            $this->record(NameWasChangedEvent::occur($this->aggregateId, $newName));
+            $this->record(TestNameWasChangedEvent::occur($this->aggregateId, $newName));
         }
     }
 
@@ -37,8 +37,8 @@ class TestAggregate extends AbstractAggregate
                 /** @var TestWasCreatedEvent $event */
                 $this->applyTestCreated($event);
             break;
-            case NameWasChangedEvent::TOPIC:
-                /** @var NameWasChangedEvent $event */
+            case TestNameWasChangedEvent::TOPIC:
+                /** @var TestNameWasChangedEvent $event */
                 $this->applyNameChanged($event);
             break;
         }
@@ -50,7 +50,7 @@ class TestAggregate extends AbstractAggregate
         $this->name = $event->getName();
     }
 
-    protected function applyNameChanged(NameWasChangedEvent $event): void
+    protected function applyNameChanged(TestNameWasChangedEvent $event): void
     {
         $this->name = $event->getName();
     }

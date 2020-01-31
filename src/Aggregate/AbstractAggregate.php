@@ -20,7 +20,7 @@ abstract class AbstractAggregate
         }
     }
 
-    public static function from(Events $events): AbstractAggregate
+    public static function from(Events $events): self
     {
         return new static($events);
     }

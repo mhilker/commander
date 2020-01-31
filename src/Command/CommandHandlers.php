@@ -32,6 +32,9 @@ final class CommandHandlers
         return isset($this->handlers[$commandClass]);
     }
 
+    /**
+     * @throws CommandHandlerNotFoundException
+     */
     public function getHandlerForCommand(string $commandClass): callable
     {
         if (!$this->has($commandClass)) {

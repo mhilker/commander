@@ -29,6 +29,9 @@ final class EventHandlers implements IteratorAggregate
         $this->handlers[] = $eventHandler;
     }
 
+    /**
+     * @return Traversable | EventHandler[]
+     */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->handlers);

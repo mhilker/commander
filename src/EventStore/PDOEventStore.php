@@ -6,15 +6,19 @@ namespace Commander\EventStore;
 
 use Commander\Aggregate\AggregateId;
 use Commander\EventStore\Exception\EventStoreException;
+use Exception;
 use PDO;
 
 final class PDOEventStore implements EventStore
 {
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
+    private EventTopicMap $map;
+
+    public function __construct(PDO $pdo, EventTopicMap $map)
     {
         $this->pdo = $pdo;
+        $this->map = $map;
     }
 
     public function store(StorableEvents $events): void
@@ -35,12 +39,12 @@ final class PDOEventStore implements EventStore
                     'aggregate_id' => $event->getAggregateId()->asString(),
                     'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
                     'event_type'   => $event->getType(),
-                    'payload'      => json_encode($event->getPayload(), JSON_THROW_ON_ERROR, 512)
+                    'payload'      => json_encode($event->getPayload(), JSON_THROW_ON_ERROR)
                 ]);
             }
 
             $this->pdo->commit();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw new EventStoreException('Could not store events.', 0, $exception);
         }
     }
@@ -68,9 +72,7 @@ final class PDOEventStore implements EventStore
         $events = StorableEvents::from();
 
         while ($row = $statement->fetch()) {
-            $type = $row['event_type'];
-            // TODO: $class anhand von $type bestimmen
-            $event = $class::restore($row);
+            $event = $this->map->restore($row);
             $events->add($event);
         }
 
