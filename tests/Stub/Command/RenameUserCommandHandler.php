@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
+use Commander\Stub\Aggregate\Exception\UserNotFoundException;
+use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Commander\Stub\Aggregate\UserRepository;
 
 class RenameUserCommandHandler
@@ -15,6 +17,10 @@ class RenameUserCommandHandler
         $this->repository = $repository;
     }
 
+    /**
+     * @throws UserNotFoundException
+     * @throws UserNotSavedException
+     */
     public function __invoke(RenameUserCommand $command): void
     {
         $id = $command->getId();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
+use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Commander\Stub\Aggregate\UserAggregate;
 use Commander\Stub\Aggregate\UserRepository;
 
@@ -16,6 +17,9 @@ class RegisterUserCommandHandler
         $this->repository = $repository;
     }
 
+    /**
+     * @throws UserNotSavedException
+     */
     public function __invoke(RegisterUserCommand $command): void
     {
         $id = $command->getId();
