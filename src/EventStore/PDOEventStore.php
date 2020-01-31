@@ -29,7 +29,7 @@ final class PDOEventStore implements EventStore
             foreach ($events as $event) {
                 $sql = <<<QUERY
                     INSERT INTO 
-                        events (aggregate_id, occurred_on, topic, payload) 
+                        `events` (`aggregate_id`, `occurred_on`, `topic`, `payload`) 
                     VALUES 
                         (:aggregate_id, :occurred_on, :topic, :payload);
                 QUERY;
@@ -55,9 +55,9 @@ final class PDOEventStore implements EventStore
             SELECT 
                 * 
             FROM 
-                events 
+                `events` 
             WHERE 
-                aggregate_id = :aggregate_id;
+                `aggregate_id` = :aggregate_id;
         QUERY;
 
         $statement = $this->pdo->prepare($query);
