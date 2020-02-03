@@ -8,7 +8,7 @@ use Commander\Event\Event;
 use Commander\Event\EventHandler;
 use SplQueue;
 
-class StubEventHandler implements EventHandler
+final class StubEventHandler implements EventHandler
 {
     private SplQueue $queue;
 

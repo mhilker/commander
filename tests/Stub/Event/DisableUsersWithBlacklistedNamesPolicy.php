@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Event;
 
-use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
 use Commander\Event\EventHandler;
+use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Aggregate\UserRepository;
 
@@ -27,9 +27,11 @@ final class DisableUsersWithBlacklistedNamesPolicy implements EventHandler
     {
         switch ($event->getTopic()) {
             case UserRegisteredEvent::TOPIC:
+                /** @var UserRegisteredEvent $event */
                 $this->checkRegisteredUserName($event);
                 break;
             case UserRenamedEvent::TOPIC:
+                /** @var UserRenamedEvent $event */
                 $this->checkRenamedUserName($event);
                 break;
         }
@@ -37,15 +39,15 @@ final class DisableUsersWithBlacklistedNamesPolicy implements EventHandler
 
     private function checkRegisteredUserName(UserRegisteredEvent $event): void
     {
-        $this->checkUserName($event->getAggregateId(), $event->getName());
+        $this->checkUserName($event->getId(), $event->getName());
     }
 
     private function checkRenamedUserName(UserRenamedEvent $event): void
     {
-        $this->checkUserName($event->getAggregateId(), $event->getName());
+        $this->checkUserName($event->getId(), $event->getName());
     }
 
-    private function checkUserName(AggregateId $id, UserName $name): void
+    private function checkUserName(UserId $id, UserName $name): void
     {
         if (in_array($name->asString(), self::BLACKLISTED_NAMES, false) === false) {
             return;

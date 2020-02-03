@@ -5,22 +5,19 @@ declare(strict_types=1);
 namespace Commander\Stub\Command;
 
 use Commander\Command\Command;
+use Commander\IdentifierTrait;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
-use Commander\UUID;
-use Commander\UUIDImpl;
 
-class RegisterUserCommand implements Command
+final class RegisterUserCommand implements Command
 {
-    private UUID $id;
+    use IdentifierTrait;
 
     private UserId $userId;
-
     private UserName $name;
 
     public function __construct(UserId $userId, UserName $name)
     {
-        $this->id = new UUIDImpl();
         $this->userId = $userId;
         $this->name = $name;
     }
@@ -33,10 +30,5 @@ class RegisterUserCommand implements Command
     public function getName(): UserName
     {
         return $this->name;
-    }
-
-    public function getId(): UUID
-    {
-        return $this->id;
     }
 }

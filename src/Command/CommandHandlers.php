@@ -18,7 +18,7 @@ final class CommandHandlers
         }
     }
 
-    public function add(string $commandClass, callable $commandHandler): void
+    private function add(string $commandClass, callable $commandHandler): void
     {
         if (!class_exists($commandClass)) {
             throw new InvalidCommandClassException('Command does not exists.');

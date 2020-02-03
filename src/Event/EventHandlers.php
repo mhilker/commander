@@ -24,7 +24,7 @@ final class EventHandlers implements IteratorAggregate
         return new self($handlers);
     }
 
-    public function add(EventHandler $eventHandler): void
+    private function add(EventHandler $eventHandler): void
     {
         $this->handlers[] = $eventHandler;
     }

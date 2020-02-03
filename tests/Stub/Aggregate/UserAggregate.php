@@ -5,30 +5,28 @@ declare(strict_types=1);
 namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AbstractAggregate;
-use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
+use Commander\Identifier;
 use Commander\Stub\Event\UserDisabledEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
 
-class UserAggregate extends AbstractAggregate
+final class UserAggregate extends AbstractAggregate
 {
-    private AggregateId $aggregateId;
-
+    private UserId $id;
     private UserName $name;
-
     private bool $active;
 
-    public static function register(AggregateId $id, UserName $name): UserAggregate
+    public static function register(UserId $id, UserName $name): UserAggregate
     {
         $user = new self(null);
         $user->record(UserRegisteredEvent::occur($id, $name));
         return $user;
     }
 
-    protected function applyUserRegistered(UserRegisteredEvent $event): void
+    private function applyUserRegistered(UserRegisteredEvent $event): void
     {
-        $this->aggregateId = $event->getAggregateId();
+        $this->id = $event->getId();
         $this->name = $event->getName();
         $this->active = true;
     }
@@ -36,11 +34,11 @@ class UserAggregate extends AbstractAggregate
     public function rename(UserName $newName): void
     {
         if ($this->name->notEqual($newName)) {
-            $this->record(UserRenamedEvent::occur($this->aggregateId, $newName));
+            $this->record(UserRenamedEvent::occur($this->id, $newName));
         }
     }
 
-    protected function applyUserRenamed(UserRenamedEvent $event): void
+    private function applyUserRenamed(UserRenamedEvent $event): void
     {
         $this->name = $event->getName();
     }
@@ -48,16 +46,16 @@ class UserAggregate extends AbstractAggregate
     public function disable(): void
     {
         if ($this->active) {
-            $this->record(UserDisabledEvent::occur($this->aggregateId));
+            $this->record(UserDisabledEvent::occur($this->id));
         }
     }
 
-    public function applyUserDisabled(): void
+    private function applyUserDisabled(UserDisabledEvent $event): void
     {
         $this->active = false;
     }
 
-    protected function apply(Event $event): void
+    protected function dispatch(Event $event): void
     {
         switch ($event->getTopic()) {
             case UserRegisteredEvent::TOPIC:
@@ -68,11 +66,15 @@ class UserAggregate extends AbstractAggregate
                 /** @var UserRenamedEvent $event */
                 $this->applyUserRenamed($event);
                 break;
+            case UserDisabledEvent::TOPIC:
+                /** @var UserDisabledEvent $event */
+                $this->applyUserDisabled($event);
+                break;
         }
     }
 
-    public function getAggregateId(): AggregateId
+    public function getAggregateId(): Identifier
     {
-        return $this->aggregateId;
+        return $this->id;
     }
 }

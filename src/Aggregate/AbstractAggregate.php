@@ -6,10 +6,14 @@ namespace Commander\Aggregate;
 
 use Commander\Event\Event;
 use Commander\Event\Events;
+use Commander\Event\Message;
+use Commander\Event\Messages;
+use Commander\Identifier;
 
 abstract class AbstractAggregate
 {
-    private array $events = [];
+    private int $version = 0;
+    private array $messages = [];
 
     protected function __construct(?Events $events)
     {
@@ -28,15 +32,28 @@ abstract class AbstractAggregate
     public function record(Event $event): void
     {
         $this->apply($event);
-        $this->events[] = $event;
+        $this->messages[] = Message::wrap($this->getAggregateId(), $this->version, $event);
     }
 
-    public function getEvents(): Events
+    private function apply(Event $event): void
     {
-        return Events::from($this->events);
+        $this->version++;
+        $this->dispatch($event);
     }
 
-    abstract protected function apply(Event $event): void;
+    abstract protected function dispatch(Event $event): void;
 
-    abstract public function getAggregateId(): AggregateId;
+    abstract public function getAggregateId(): Identifier;
+
+    public function popEvents(): Messages
+    {
+        $messages = Messages::from($this->messages);
+        $this->messages = [];
+        return $messages;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
 }

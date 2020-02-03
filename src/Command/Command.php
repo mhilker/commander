@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Commander\Command;
 
-use Commander\UUID;
+use Commander\Identifier;
 
 interface Command
 {
-    public function getId(): UUID;
-
-    // TODO: Topic?
+    public function getId(): Identifier;
 }

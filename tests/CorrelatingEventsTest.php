@@ -71,31 +71,31 @@ class CorrelatingEventsTest extends AbstractTestCase
 
         $commandBus = new CorrelatingCommandBus($this->createCommandBus($commands), $eventStore);
         $commandBus->execute(new RegisterUserCommand(
-            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
+            UserId::from('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('John Doe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('bcc2ab4c-4403-11ea-87c1-73599d952a81'),
+            UserId::from('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('Don Joe'),
         ));
         $commandBus->execute(new RegisterUserCommand(
-            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('John Doe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Don Joe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('6b980f2c-442c-11ea-9ed3-abbde45d135b'),
+            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test'),
         ));
 

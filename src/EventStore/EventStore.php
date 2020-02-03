@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Commander\EventStore;
 
-use Commander\Aggregate\AggregateId;
+use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
+use Commander\Identifier;
 
 interface EventStore
 {
     /**
      * @throws EventStoreException
      */
-    public function store(StorableEvents $events): void;
+    public function store(Messages $messages): void;
 
     /**
      * @throws EventStoreException
      */
-    public function load(AggregateId $id): StorableEvents;
+    public function load(Identifier $id): Messages;
 }

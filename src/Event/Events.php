@@ -25,7 +25,7 @@ final class Events implements IteratorAggregate, Countable
         return new self($events);
     }
 
-    public function add(Event $event): void
+    private function add(Event $event): void
     {
         $this->events[] = $event;
     }

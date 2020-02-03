@@ -8,7 +8,7 @@ use Commander\Stub\Aggregate\Exception\UserNotFoundException;
 use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Commander\Stub\Aggregate\UserRepository;
 
-class RenameUserCommandHandler
+final class RenameUserCommandHandler
 {
     private UserRepository $repository;
 

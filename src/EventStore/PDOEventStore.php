@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Commander\EventStore;
 
-use Commander\Aggregate\AggregateId;
+use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
+use Commander\Identifier;
 use Exception;
 use PDO;
 
 final class PDOEventStore implements EventStore
 {
     private PDO $pdo;
-
     private EventTopicMap $map;
 
     public function __construct(PDO $pdo, EventTopicMap $map)
@@ -21,27 +21,40 @@ final class PDOEventStore implements EventStore
         $this->map = $map;
     }
 
-    public function store(StorableEvents $events): void
+    public function store(Messages $messages): void
     {
         try {
             $this->pdo->beginTransaction();
 
             $sql = <<<QUERY
-                INSERT INTO 
-                    `simple_events` (`event_id`, `aggregate_id`, `occurred_on`, `topic`, `payload`) 
-                VALUES 
-                    (:event_id, :aggregate_id, :occurred_on, :topic, :payload);
+                INSERT INTO `simple_events` (
+                    `event_id`, 
+                    `aggregate_id`, 
+                    `aggregate_version`, 
+                    `occurred_on`, 
+                    `topic`, 
+                    `payload`
+                )
+                VALUES (
+                    :event_id, 
+                    :aggregate_id, 
+                    :aggregate_version, 
+                    :occurred_on, 
+                    :topic, 
+                    :payload
+                );
             QUERY;
 
             $stmt = $this->pdo->prepare($sql);
 
-            foreach ($events as $event) {
+            foreach ($messages as $message) {
                 $stmt->execute([
-                    'event_id'     => $event->getId()->asString(),
-                    'aggregate_id' => $event->getAggregateId()->asString(),
-                    'occurred_on'  => $event->getOccurredOn()->format('Y-m-d H:i:s'),
-                    'topic'        => $event->getTopic(),
-                    'payload'      => json_encode($event->getPayload(), JSON_THROW_ON_ERROR)
+                    'event_id'          => $message->getId()->asString(),
+                    'aggregate_id'      => $message->getAggregateId()->asString(),
+                    'aggregate_version' => $message->getAggregateVersion(),
+                    'occurred_on'       => $message->getOccurredOn()->format('Y-m-d H:i:s'),
+                    'topic'             => $message->getEvent()->getTopic(),
+                    'payload'           => json_encode($message->getEvent()->getPayload(), JSON_THROW_ON_ERROR)
                 ]);
             }
 
@@ -52,7 +65,7 @@ final class PDOEventStore implements EventStore
         }
     }
 
-    public function load(AggregateId $id): StorableEvents
+    public function load(Identifier $id): Messages
     {
         $query = <<<QUERY
             SELECT 
@@ -72,13 +85,11 @@ final class PDOEventStore implements EventStore
             throw new EventStoreException('No events for aggregate found.');
         }
 
-        $events = StorableEvents::from();
-
+        $messages = [];
         while ($row = $statement->fetch()) {
-            $event = $this->map->restore($row);
-            $events->add($event);
+            $messages[] = $this->map->restore($row);
         }
 
-        return $events;
+        return Messages::from($messages);
     }
 }

@@ -9,9 +9,7 @@ use Commander\EventStore\CorrelatingEventStore;
 final class CorrelatingDirectEventBus implements EventDispatcher
 {
     private EventHandlers $handlers;
-
     private CorrelatingEventStore $eventStore;
-
     private SplQueueEventPublisher $publisher;
 
     public function __construct(EventHandlers $handlers, CorrelatingEventStore $eventStore, SplQueueEventPublisher $publisher)

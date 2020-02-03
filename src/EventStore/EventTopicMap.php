@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Commander\EventStore;
 
+use Commander\Event\Message;
+
 final class EventTopicMap
 {
     private array $map;
@@ -13,10 +15,13 @@ final class EventTopicMap
         $this->map = $map;
     }
 
-    public function restore(array $row): StorableEvent
+    public function restore(array $data): Message
     {
-        $topic = $row['topic'];
+        $topic = $data['topic'];
         $class = $this->map[$topic];
-        return $class::restore($row);
+        $payload = json_decode($data['payload'], true, 512, JSON_THROW_ON_ERROR);
+        $event = $class::restore($payload);
+
+        return Message::reconstitute($data, $event);
     }
 }

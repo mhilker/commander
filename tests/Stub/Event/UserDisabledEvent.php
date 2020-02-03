@@ -4,48 +4,40 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Event;
 
-use Commander\Aggregate\AggregateId;
 use Commander\Event\Event;
-use Commander\EventStore\StorableEvent;
-use Commander\UUID;
-use Commander\UUIDImpl;
-use DateTimeImmutable;
-use DateTimeZone;
+use Commander\Stub\Aggregate\UserId;
 
-final class UserDisabledEvent implements Event, StorableEvent
+final class UserDisabledEvent implements Event
 {
     public const TOPIC = 'com.example.event.user_disabled';
 
-    private UUID $id;
+    private UserId $id;
 
-    private AggregateId $aggregateId;
-
-    private DateTimeImmutable $occurredOn;
-
-    public function __construct(UUID $id, AggregateId $aggregateId, DateTimeImmutable $occurredOn)
+    private function __construct(UserId $id)
     {
         $this->id = $id;
-        $this->aggregateId = $aggregateId;
-        $this->occurredOn = $occurredOn;
     }
 
-    public static function occur(AggregateId $userId): self
+    public static function occur(UserId $id): self
     {
-        $id = new UUIDImpl();
-        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-        return new self($id, $userId, $now);
+        return new self($id);
     }
 
-    public static function restore(array $event): StorableEvent
+    public static function restore(array $payload): Event
     {
-        $id = new UUIDImpl($event['event_id']);
-        $userId = UserId::from($event['aggregate_id']);
-        $now = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $event['occurred_on'], new DateTimeZone('UTC'));
+        $userId = UserId::from($payload['id']);
 
-        return new self($id, $userId, $now);
+        return new self($userId);
     }
 
-    public function getId(): UUID
+    public function getPayload(): array
+    {
+        return [
+            'id' => $this->id->asString(),
+        ];
+    }
+
+    public function getId(): UserId
     {
         return $this->id;
     }
@@ -53,21 +45,6 @@ final class UserDisabledEvent implements Event, StorableEvent
     public function getTopic(): string
     {
         return self::TOPIC;
-    }
-
-    public function getAggregateId(): AggregateId
-    {
-        return $this->aggregateId;
-    }
-
-    public function getOccurredOn(): DateTimeImmutable
-    {
-        return $this->occurredOn;
-    }
-
-    public function getPayload(): array
-    {
-        return [];
     }
 
     public function getVersion(): int

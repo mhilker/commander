@@ -6,6 +6,7 @@ namespace Commander\Aggregate;
 
 use Commander\Aggregate\Exception\AggregateNotFoundException;
 use Commander\Aggregate\Exception\AggregateNotSavedException;
+use Commander\Identifier;
 
 interface AggregateRepository
 {
@@ -17,5 +18,5 @@ interface AggregateRepository
     /**
      * @throws AggregateNotFoundException
      */
-    public function load(AggregateId $id): AbstractAggregate;
+    public function load(Identifier $id): AbstractAggregate;
 }

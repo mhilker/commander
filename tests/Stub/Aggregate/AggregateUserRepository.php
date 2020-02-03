@@ -9,7 +9,7 @@ use Commander\Stub\Aggregate\Exception\UserNotFoundException;
 use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Exception;
 
-class AggregateUserRepository implements UserRepository
+final class AggregateUserRepository implements UserRepository
 {
     private AggregateRepository $repository;
 

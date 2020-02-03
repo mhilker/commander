@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Commander\EventStore;
 
-use Commander\Aggregate\AggregateId;
+use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
-use Commander\UUID;
+use Commander\Identifier;
 use Exception;
 use PDO;
 
 final class CorrelatingPDOEventStore implements CorrelatingEventStore
 {
     private PDO $pdo;
-
     private EventTopicMap $map;
-
-    private UUID $currentCorrelationId;
-
-    private UUID $currentCausationId;
+    private Identifier $currentCorrelationId;
+    private Identifier $currentCausationId;
 
     public function __construct(PDO $pdo, EventTopicMap $map)
     {
@@ -26,7 +23,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
         $this->map = $map;
     }
 
-    public function store(StorableEvents $events): void
+    public function store(Messages $messages): void
     {
         try {
             $this->pdo->beginTransaction();
@@ -37,6 +34,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
                     `correlation_id`, 
                     `causation_id`, 
                     `aggregate_id`, 
+                    `aggregate_version`, 
                     `occurred_on`, 
                     `topic`, 
                     `version`, 
@@ -47,6 +45,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
                     :correlation_id, 
                     :causation_id, 
                     :aggregate_id, 
+                    :aggregate_version, 
                     :occurred_on, 
                     :topic, 
                     :version, 
@@ -56,16 +55,17 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
 
             $statement = $this->pdo->prepare($sql);
 
-            foreach ($events as $event) {
+            foreach ($messages as $message) {
                 $statement->execute([
-                    'event_id'       => $event->getId()->asString(),
-                    'correlation_id' => $this->currentCorrelationId->asString(),
-                    'causation_id'   => $this->currentCausationId->asString(),
-                    'aggregate_id'   => $event->getAggregateId()->asString(),
-                    'occurred_on'    => $event->getOccurredOn()->format('Y-m-d H:i:s'),
-                    'topic'          => $event->getTopic(),
-                    'version'        => 1,
-                    'payload'        => json_encode($event->getPayload(), JSON_THROW_ON_ERROR)
+                    'event_id'          => $message->getId()->asString(),
+                    'correlation_id'    => $this->currentCorrelationId->asString(),
+                    'causation_id'      => $this->currentCausationId->asString(),
+                    'aggregate_id'      => $message->getAggregateId()->asString(),
+                    'aggregate_version' => $message->getAggregateVersion(),
+                    'occurred_on'       => $message->getOccurredOn()->format('Y-m-d H:i:s'),
+                    'topic'             => $message->getEvent()->getTopic(),
+                    'version'           => $message->getEvent()->getVersion(),
+                    'payload'           => json_encode($message->getEvent()->getPayload(), JSON_THROW_ON_ERROR)
                 ]);
             }
 
@@ -76,7 +76,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
         }
     }
 
-    public function load(AggregateId $id): StorableEvents
+    public function load(Identifier $id): Messages
     {
         $query = <<<QUERY
             SELECT 
@@ -96,22 +96,20 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
             throw new EventStoreException('No events for aggregate found.');
         }
 
-        $events = StorableEvents::from();
-
+        $messages = [];
         while ($row = $statement->fetch()) {
-            $event = $this->map->restore($row);
-            $events->add($event);
+            $messages[] = $this->map->restore($row);
         }
 
-        return $events;
+        return Messages::from($messages);
     }
 
-    public function useCorrelationId(UUID $id): void
+    public function useCorrelationId(Identifier $id): void
     {
         $this->currentCorrelationId = $id;
     }
 
-    public function useCausationId(UUID $id): void
+    public function useCausationId(Identifier $id): void
     {
         $this->currentCausationId = $id;
     }
