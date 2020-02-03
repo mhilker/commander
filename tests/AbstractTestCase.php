@@ -9,8 +9,8 @@ use Commander\Command\DirectCommandBus;
 use Commander\Event\DirectEventBus;
 use Commander\Event\EventHandlers;
 use Commander\Event\EventPublisher;
+use Commander\EventStore\DefaultEventTopicMap;
 use Commander\EventStore\EventStore;
-use Commander\EventStore\EventTopicMap;
 use Commander\EventStore\PDOEventStore;
 use Commander\Stub\Aggregate\AggregateUserRepository;
 use Commander\Stub\Event\StubEventHandler;
@@ -43,7 +43,7 @@ abstract class AbstractTestCase extends TestCase
 
     protected function createEventStore(PDO $pdo, array $map): PDOEventStore
     {
-        return new PDOEventStore($pdo, new EventTopicMap($map));
+        return new PDOEventStore($pdo, new DefaultEventTopicMap($map));
     }
 
     protected function createPDO(): PDO

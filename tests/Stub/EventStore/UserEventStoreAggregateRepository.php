@@ -12,6 +12,6 @@ final class UserEventStoreAggregateRepository extends AbstractEventStoreAggregat
 {
     protected function createAggregateWithMessages(Messages $messages): UserAggregate
     {
-        return UserAggregate::from($messages->getEvents());
+        return UserAggregate::from($messages);
     }
 }

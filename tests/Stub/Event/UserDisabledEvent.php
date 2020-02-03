@@ -23,9 +23,9 @@ final class UserDisabledEvent implements Event
         return new self($id);
     }
 
-    public static function restore(array $payload): Event
+    public static function fromPayload(array $payload): Event
     {
-        $userId = UserId::from($payload['id']);
+        $userId = UserId::fromV4($payload['id']);
 
         return new self($userId);
     }

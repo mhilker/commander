@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Commander;
+namespace Commander\Util;
 
 class UUID implements Identifier
 {
-    private const PATTERN = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+    private const PATTERN_V4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
 
     private string $id;
 
@@ -19,30 +19,30 @@ class UUID implements Identifier
             throw new InvalidUUIDException('ID must not be empty.');
         }
 
-        if (!preg_match(self::PATTERN, $id)) {
-            throw new InvalidUUIDException('ID is invalid.');
-        }
-
         $this->id = $id;
     }
 
     /**
      * @throws InvalidUUIDException
      */
-    public static function from(string $id): self
+    public static function fromV4(string $id): self
     {
+        if (!preg_match(self::PATTERN_V4, $id)) {
+            throw new InvalidUUIDException('ID is invalid.');
+        }
+
         return new static($id);
     }
 
     /**
      * @throws InvalidUUIDException
      */
-    public static function generate(): self
+    public static function generateV4(): self
     {
         return new static(self::v4());
     }
 
-    protected static function v4(): string
+    private static function v4(): string
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

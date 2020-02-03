@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Commander\Stub\Command;
 
 use Commander\Command\Command;
-use Commander\IdentifierTrait;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
+use Commander\Util\IdentifierTrait;
 
 final class RegisterUserCommand implements Command
 {

@@ -6,5 +6,5 @@ namespace Commander\Event;
 
 interface EventPublisher
 {
-    public function publish(Events $events): void;
+    public function publish(Messages $messages): void;
 }

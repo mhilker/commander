@@ -9,6 +9,7 @@ use Commander\Stub\Aggregate\Exception\UserNotSavedException;
 use Commander\Stub\Aggregate\UserAggregate;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserRepository;
+use Commander\Stub\Command\Exception\UserAlreadyExistsException;
 
 final class RegisterUserCommandHandler
 {
@@ -21,6 +22,7 @@ final class RegisterUserCommandHandler
 
     /**
      * @throws UserNotSavedException
+     * @throws UserAlreadyExistsException
      */
     public function __invoke(RegisterUserCommand $command): void
     {
@@ -34,6 +36,9 @@ final class RegisterUserCommandHandler
         $this->repository->save($user);
     }
 
+    /**
+     * @throws UserAlreadyExistsException
+     */
     private function assertUserDoesNotExists(UserId $id): bool
     {
         try {
@@ -41,6 +46,7 @@ final class RegisterUserCommandHandler
         } catch (UserNotFoundException $exception) {
             return true;
         }
-        return false;
+
+        throw new UserAlreadyExistsException('User already exists.');
     }
 }

@@ -45,13 +45,4 @@ final class Messages implements IteratorAggregate, Countable
     {
         return count($this->messages);
     }
-
-    public function getEvents()
-    {
-        $events = [];
-        foreach ($this->messages as $message) {
-            $events[] = $message->getEvent();
-        }
-        return Events::from($events);
-    }
 }

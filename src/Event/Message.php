@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Commander\Event;
 
-use Commander\Identifier;
-use Commander\UUID;
+use Commander\Util\Identifier;
+use Commander\Util\UUID;
 use DateTimeImmutable;
 use DateTimeZone;
 
@@ -34,7 +34,7 @@ final class Message
     public static function wrap(Identifier $aggregateId, int $aggregateVersion, Event $event): self
     {
         return new self(
-            UUID::generate(),
+            UUID::generateV4(),
             new DateTimeImmutable('now', new DateTimeZone('UTC')),
             $event,
             $aggregateId,
@@ -45,10 +45,10 @@ final class Message
     public static function reconstitute(array $data, Event $event): self
     {
         return new self(
-            UUID::from($data['event_id']),
+            UUID::fromV4($data['event_id']),
             DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['occurred_on'], new DateTimeZone('UTC')),
             $event,
-            UUID::from($data['aggregate_id']),
+            UUID::fromV4($data['aggregate_id']),
             (int) $data['aggregate_version'],
         );
     }

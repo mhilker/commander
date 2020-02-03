@@ -6,14 +6,14 @@ namespace Commander\EventStore;
 
 use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 use Exception;
 use PDO;
 
 final class PDOEventStore implements EventStore
 {
     private PDO $pdo;
-    private EventTopicMap $map;
+    private DefaultEventTopicMap $map;
 
     public function __construct(PDO $pdo, EventTopicMap $map)
     {
@@ -87,7 +87,7 @@ final class PDOEventStore implements EventStore
 
         $messages = [];
         while ($row = $statement->fetch()) {
-            $messages[] = $this->map->restore($row);
+            $messages[] = $this->map->reconstitute($row);
         }
 
         return Messages::from($messages);

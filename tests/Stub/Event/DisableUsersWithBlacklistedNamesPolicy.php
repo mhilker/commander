@@ -49,12 +49,17 @@ final class DisableUsersWithBlacklistedNamesPolicy implements EventHandler
 
     private function checkUserName(UserId $id, UserName $name): void
     {
-        if (in_array($name->asString(), self::BLACKLISTED_NAMES, false) === false) {
+        if ($this->isUserNameBlacklisted($name) === false) {
             return;
         }
 
         $user = $this->repository->load($id);
         $user->disable();
         $this->repository->save($user);
+    }
+
+    private function isUserNameBlacklisted(UserName $name): bool
+    {
+        return in_array($name->asString(), self::BLACKLISTED_NAMES, false) === true;
     }
 }

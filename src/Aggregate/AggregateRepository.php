@@ -6,7 +6,7 @@ namespace Commander\Aggregate;
 
 use Commander\Aggregate\Exception\AggregateNotFoundException;
 use Commander\Aggregate\Exception\AggregateNotSavedException;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 
 interface AggregateRepository
 {

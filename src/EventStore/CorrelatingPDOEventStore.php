@@ -6,14 +6,14 @@ namespace Commander\EventStore;
 
 use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 use Exception;
 use PDO;
 
 final class CorrelatingPDOEventStore implements CorrelatingEventStore
 {
     private PDO $pdo;
-    private EventTopicMap $map;
+    private DefaultEventTopicMap $map;
     private Identifier $currentCorrelationId;
     private Identifier $currentCausationId;
 
@@ -98,7 +98,7 @@ final class CorrelatingPDOEventStore implements CorrelatingEventStore
 
         $messages = [];
         while ($row = $statement->fetch()) {
-            $messages[] = $this->map->restore($row);
+            $messages[] = $this->map->reconstitute($row);
         }
 
         return Messages::from($messages);

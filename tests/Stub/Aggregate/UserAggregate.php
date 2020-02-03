@@ -6,10 +6,10 @@ namespace Commander\Stub\Aggregate;
 
 use Commander\Aggregate\AbstractAggregate;
 use Commander\Event\Event;
-use Commander\Identifier;
 use Commander\Stub\Event\UserDisabledEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
+use Commander\Util\Identifier;
 
 final class UserAggregate extends AbstractAggregate
 {

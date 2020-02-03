@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander;
+namespace Commander\Util;
 
 interface Identifier
 {

@@ -9,7 +9,7 @@ use Commander\Aggregate\Exception\AggregateNotSavedException;
 use Commander\Event\EventPublisher;
 use Commander\Event\Messages;
 use Commander\EventStore\EventStore;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 use Exception;
 
 abstract class AbstractEventStoreAggregateRepository implements AggregateRepository
@@ -35,7 +35,7 @@ abstract class AbstractEventStoreAggregateRepository implements AggregateReposit
             throw new AggregateNotSavedException('Could not save aggregate', 0, $exception);
         }
 
-        $this->eventPublisher->publish($messages->getEvents());
+        $this->eventPublisher->publish($messages);
     }
 
     /**

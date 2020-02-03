@@ -8,7 +8,7 @@ use SplQueue;
 
 final class SplQueueEventPublisher implements EventPublisher
 {
-    /** @var SplQueue | Events[] */
+    /** @var SplQueue | Messages[] */
     private SplQueue $queue;
 
     public function __construct()
@@ -16,12 +16,12 @@ final class SplQueueEventPublisher implements EventPublisher
         $this->queue = new SplQueue();
     }
 
-    public function publish(Events $events): void
+    public function publish(Messages $messages): void
     {
-        $this->queue->enqueue($events);
+        $this->queue->enqueue($messages);
     }
 
-    public function dequeue(): Events
+    public function dequeue(): Messages
     {
         return $this->queue->dequeue();
     }

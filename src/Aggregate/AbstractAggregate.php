@@ -5,28 +5,27 @@ declare(strict_types=1);
 namespace Commander\Aggregate;
 
 use Commander\Event\Event;
-use Commander\Event\Events;
 use Commander\Event\Message;
 use Commander\Event\Messages;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 
 abstract class AbstractAggregate
 {
     private int $version = 0;
     private array $messages = [];
 
-    protected function __construct(?Events $events)
+    protected function __construct(?Messages $messages)
     {
-        if ($events !== null) {
-            foreach ($events as $event) {
-                $this->apply($event);
+        if ($messages !== null) {
+            foreach ($messages as $message) {
+                $this->apply($message->getEvent());
             }
         }
     }
 
-    public static function from(Events $events): self
+    public static function from(Messages $messages): self
     {
-        return new static($events);
+        return new static($messages);
     }
 
     public function record(Event $event): void

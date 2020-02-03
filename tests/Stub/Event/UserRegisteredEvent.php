@@ -26,9 +26,9 @@ final class UserRegisteredEvent implements Event
         return new self($id, $name);
     }
 
-    public static function restore(array $payload): Event
+    public static function fromPayload(array $payload): Event
     {
-        $id = UserId::from($payload['id']);
+        $id = UserId::fromV4($payload['id']);
         $name = UserName::from($payload['name']);
 
         return new self($id, $name);

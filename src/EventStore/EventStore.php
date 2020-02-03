@@ -6,7 +6,7 @@ namespace Commander\EventStore;
 
 use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
-use Commander\Identifier;
+use Commander\Util\Identifier;
 
 interface EventStore
 {

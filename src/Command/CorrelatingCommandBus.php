@@ -22,6 +22,7 @@ final class CorrelatingCommandBus implements CommandBus
     {
         $this->eventStore->useCorrelationId($command->getId());
         $this->eventStore->useCausationId($command->getId());
+
         $this->commandBus->execute($command);
     }
 }

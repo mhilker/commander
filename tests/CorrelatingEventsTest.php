@@ -10,7 +10,7 @@ use Commander\Event\Event;
 use Commander\Event\EventHandlers;
 use Commander\Event\SplQueueEventPublisher;
 use Commander\EventStore\CorrelatingPDOEventStore;
-use Commander\EventStore\EventTopicMap;
+use Commander\EventStore\DefaultEventTopicMap;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
@@ -49,7 +49,7 @@ class CorrelatingEventsTest extends AbstractTestCase
 
 
         $pdo = $this->createPDO();
-        $eventStore = new CorrelatingPDOEventStore($pdo, new EventTopicMap($events));
+        $eventStore = new CorrelatingPDOEventStore($pdo, new DefaultEventTopicMap($events));
 
         $eventPublisher = new SplQueueEventPublisher();
         $repository = $this->createRepository($eventStore, $eventPublisher);
@@ -71,31 +71,31 @@ class CorrelatingEventsTest extends AbstractTestCase
 
         $commandBus = new CorrelatingCommandBus($this->createCommandBus($commands), $eventStore);
         $commandBus->execute(new RegisterUserCommand(
-            UserId::from('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
+            UserId::fromV4('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('John Doe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
+            UserId::fromV4('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('Don Joe'),
         ));
         $commandBus->execute(new RegisterUserCommand(
-            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
+            UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('John Doe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
+            UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Don Joe'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
+            UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
+            UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
-            UserId::from('f5295e41-07ac-43c4-b99a-43247275ae73'),
+            UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test'),
         ));
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander;
+namespace Commander\Util;
 
 trait IdentifierTrait
 {
@@ -11,7 +11,7 @@ trait IdentifierTrait
     public function getId(): Identifier
     {
         if ($this->id === null) {
-            $this->id = UUID::generate();
+            $this->id = UUID::generateV4();
         }
 
         return $this->id;
