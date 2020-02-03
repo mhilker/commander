@@ -47,6 +47,7 @@ final class PDOEventStore implements EventStore
 
             $this->pdo->commit();
         } catch (Exception $exception) {
+            $this->pdo->rollBack();
             throw new EventStoreException('Could not store events.', 0, $exception);
         }
     }
