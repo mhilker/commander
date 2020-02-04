@@ -24,4 +24,8 @@ final class DirectCommandBus implements CommandBus
         $handler = $this->handlers->getHandlerForCommand($commandClass);
         $handler($command);
     }
+
+    public function dispatch(): void
+    {
+    }
 }

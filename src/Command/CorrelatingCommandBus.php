@@ -9,13 +9,14 @@ use Commander\EventStore\CorrelatingEventStore;
 final class CorrelatingCommandBus implements CommandBus
 {
     private CommandBus $commandBus;
-
     private CorrelatingEventStore $eventStore;
+    private CommandPublisher $commandPublisher;
 
-    public function __construct(CommandBus $commandBus, CorrelatingEventStore $eventStore)
+    public function __construct(CommandBus $commandBus, CorrelatingEventStore $eventStore, CommandPublisher $commandPublisher)
     {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
+        $this->commandPublisher = $commandPublisher;
     }
 
     public function execute(Command $command): void
@@ -24,5 +25,13 @@ final class CorrelatingCommandBus implements CommandBus
         $this->eventStore->useCausationId($command->getId());
 
         $this->commandBus->execute($command);
+    }
+
+    public function dispatch(): void
+    {
+        while ($this->commandPublisher->count() > 0) {
+            $command = $this->commandPublisher->dequeue();
+            $this->execute($command);
+        }
     }
 }

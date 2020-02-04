@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Commander;
 
 use Commander\Command\CorrelatingCommandBus;
+use Commander\Command\DebugCommandPublisher;
 use Commander\Event\CorrelatingDirectEventBus;
 use Commander\Event\Event;
 use Commander\Event\EventHandlers;
@@ -18,6 +19,7 @@ use Commander\Stub\Command\RegisterUserCommandHandler;
 use Commander\Stub\Command\RenameUserCommand;
 use Commander\Stub\Command\RenameUserCommandHandler;
 use Commander\Stub\Event\DisableUsersWithBlacklistedNamesPolicy;
+use Commander\Stub\Event\RegisterUserWhenUserWasDisabledPolicy;
 use Commander\Stub\Event\StubEventHandler;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
@@ -54,10 +56,13 @@ class CorrelatingEventsTest extends AbstractTestCase
         $eventPublisher = new SplQueueEventPublisher();
         $repository = $this->createRepository($eventStore, $eventPublisher);
 
+        $commandPublisher = new DebugCommandPublisher();
+
         $eventBus = new CorrelatingDirectEventBus(
             EventHandlers::from([
                 new StubEventHandler($eventHandler1, $eventHandler2),
                 new DisableUsersWithBlacklistedNamesPolicy($repository),
+                new RegisterUserWhenUserWasDisabledPolicy($commandPublisher),
             ]),
             $eventStore,
             $eventPublisher
@@ -69,7 +74,7 @@ class CorrelatingEventsTest extends AbstractTestCase
             RenameUserCommand::class => new RenameUserCommandHandler($repository),
         ];
 
-        $commandBus = new CorrelatingCommandBus($this->createCommandBus($commands), $eventStore);
+        $commandBus = new CorrelatingCommandBus($this->createCommandBus($commands), $eventStore, $commandPublisher);
         $commandBus->execute(new RegisterUserCommand(
             UserId::fromV4('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('John Doe'),
@@ -100,5 +105,6 @@ class CorrelatingEventsTest extends AbstractTestCase
         ));
 
         $eventBus->dispatch();
+        $commandBus->dispatch();
     }
 }

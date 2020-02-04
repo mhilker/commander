@@ -7,4 +7,6 @@ namespace Commander\Command;
 interface CommandBus
 {
     public function execute(Command $command): void;
+
+    public function dispatch(): void;
 }
