@@ -10,6 +10,7 @@ use Commander\Stub\Aggregate\UserId;
 final class UserDisabledEvent implements Event
 {
     public const TOPIC = 'com.example.event.user_disabled';
+    public const VERSION = 1;
 
     private UserId $id;
 
@@ -49,6 +50,6 @@ final class UserDisabledEvent implements Event
 
     public function getVersion(): int
     {
-        return 1;
+        return self::VERSION;
     }
 }

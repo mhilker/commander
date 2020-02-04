@@ -11,6 +11,7 @@ use Commander\Stub\Aggregate\UserName;
 final class UserRenamedEvent implements Event
 {
     public const TOPIC = 'com.example.event.user_renamed';
+    public const VERSION = 1;
 
     private UserId $id;
     private UserName $name;
@@ -59,6 +60,6 @@ final class UserRenamedEvent implements Event
 
     public function getVersion(): int
     {
-        return 1;
+        return self::VERSION;
     }
 }
