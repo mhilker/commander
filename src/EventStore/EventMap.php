@@ -6,7 +6,7 @@ namespace Commander\EventStore;
 
 use Commander\Event\Message;
 
-interface EventTopicMap
+interface EventMap
 {
     public function reconstitute(array $data): Message;
 }

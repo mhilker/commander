@@ -13,11 +13,11 @@ use PDO;
 final class PDOEventStore implements CorrelatingEventStore
 {
     private PDO $pdo;
-    private EventTopicMap $map;
+    private EventMap $map;
     private Identifier $currentCorrelationId;
     private Identifier $currentCausationId;
 
-    public function __construct(PDO $pdo, EventTopicMap $map)
+    public function __construct(PDO $pdo, EventMap $map)
     {
         $this->pdo = $pdo;
         $this->map = $map;
