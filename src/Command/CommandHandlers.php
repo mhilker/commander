@@ -18,6 +18,9 @@ final class CommandHandlers
         }
     }
 
+    /**
+     * @throws InvalidCommandClassException
+     */
     private function add(string $commandClass, callable $commandHandler): void
     {
         if (!class_exists($commandClass)) {

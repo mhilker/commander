@@ -6,7 +6,7 @@ namespace Commander\Command;
 
 use SplQueue;
 
-final class DebugCommandPublisher implements CommandPublisher
+final class MemoryCommandPublisher implements CommandPublisher
 {
     private SplQueue $commands;
 
@@ -14,7 +14,6 @@ final class DebugCommandPublisher implements CommandPublisher
     {
         $this->commands = new SplQueue();
     }
-
 
     public function publish(Command $command): void
     {

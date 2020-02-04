@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Commander\Event;
 
+use Commander\EventStore\CorrelatingEventStore;
+
 final class DirectEventBus implements EventDispatcher
 {
     private EventHandlers $handlers;
-    private EventPublisher $publisher;
+    private CorrelatingEventStore $eventStore;
+    private MemoryEventPublisher $publisher;
 
-    public function __construct(EventHandlers $handlers, EventPublisher $publisher)
+    public function __construct(EventHandlers $handlers, CorrelatingEventStore $eventStore, MemoryEventPublisher $publisher)
     {
         $this->handlers = $handlers;
+        $this->eventStore = $eventStore;
         $this->publisher = $publisher;
     }
 
@@ -26,6 +30,7 @@ final class DirectEventBus implements EventDispatcher
     private function dispatchMessages(Messages $messages): void
     {
         foreach ($messages as $message) {
+            $this->eventStore->useCausationId($message->getId());
             $event = $message->getEvent();
             foreach ($this->handlers as $handler) {
                 $handler->handle($event);

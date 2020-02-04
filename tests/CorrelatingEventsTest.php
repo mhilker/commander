@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Commander;
 
-use Commander\Command\CorrelatingCommandBus;
-use Commander\Command\DebugCommandPublisher;
-use Commander\Event\CorrelatingDirectEventBus;
+use Commander\Command\CommandHandlers;
+use Commander\Command\DirectCommandBus;
+use Commander\Command\MemoryCommandPublisher;
+use Commander\Event\DirectEventBus;
 use Commander\Event\Event;
 use Commander\Event\EventHandlers;
-use Commander\Event\SplQueueEventPublisher;
-use Commander\EventStore\CorrelatingPDOEventStore;
+use Commander\Event\MemoryEventPublisher;
 use Commander\EventStore\DefaultEventTopicMap;
+use Commander\EventStore\PDOEventStore;
+use Commander\Stub\Aggregate\AggregateUserRepository;
 use Commander\Stub\Aggregate\UserId;
 use Commander\Stub\Aggregate\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
@@ -23,13 +25,14 @@ use Commander\Stub\Event\RegisterUserWhenUserWasDisabledPolicy;
 use Commander\Stub\Event\StubEventHandler;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
+use Commander\Stub\EventStore\UserEventStoreAggregateRepository;
 use Exception;
 
 class CorrelatingEventsTest extends AbstractTestCase
 {
     public function setUp(): void
     {
-        $this->createPDO()->exec('TRUNCATE TABLE `correlating_events`;');
+        $this->createPDO()->exec('TRUNCATE TABLE `events`;');
     }
 
     /**
@@ -49,32 +52,32 @@ class CorrelatingEventsTest extends AbstractTestCase
             UserRenamedEvent::TOPIC => UserRenamedEvent::class,
         ];
 
-
         $pdo = $this->createPDO();
-        $eventStore = new CorrelatingPDOEventStore($pdo, new DefaultEventTopicMap($events));
+        $eventStore = new PDOEventStore($pdo, new DefaultEventTopicMap($events));
 
-        $eventPublisher = new SplQueueEventPublisher();
-        $repository = $this->createRepository($eventStore, $eventPublisher);
+        $eventPublisher = new MemoryEventPublisher();
+        $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $eventPublisher);
+        $userRepository = new AggregateUserRepository($aggregateRepository);
 
-        $commandPublisher = new DebugCommandPublisher();
+        $commandPublisher = new MemoryCommandPublisher();
 
-        $eventBus = new CorrelatingDirectEventBus(
-            EventHandlers::from([
-                new StubEventHandler($eventHandler1, $eventHandler2),
-                new DisableUsersWithBlacklistedNamesPolicy($repository),
-                new RegisterUserWhenUserWasDisabledPolicy($commandPublisher),
-            ]),
+        $eventHandlers = EventHandlers::from([
+            new StubEventHandler($eventHandler1, $eventHandler2),
+            new DisableUsersWithBlacklistedNamesPolicy($userRepository),
+            new RegisterUserWhenUserWasDisabledPolicy($commandPublisher),
+        ]);
+        $eventBus = new DirectEventBus(
+            $eventHandlers,
             $eventStore,
             $eventPublisher
         );
-        $repository = $this->createRepository($eventStore, $eventPublisher);
 
-        $commands = [
-            RegisterUserCommand::class => new RegisterUserCommandHandler($repository),
-            RenameUserCommand::class => new RenameUserCommandHandler($repository),
-        ];
+        $commandHandlers = new CommandHandlers([
+            RegisterUserCommand::class => new RegisterUserCommandHandler($userRepository),
+            RenameUserCommand::class => new RenameUserCommandHandler($userRepository),
+        ]);
 
-        $commandBus = new CorrelatingCommandBus($this->createCommandBus($commands), $eventStore, $commandPublisher);
+        $commandBus = new DirectCommandBus($commandHandlers, $eventStore, $commandPublisher, $eventBus);
         $commandBus->execute(new RegisterUserCommand(
             UserId::fromV4('7bd09ac0-fa17-40cd-8d77-cfb36433b2c9'),
             UserName::from('John Doe'),
@@ -103,8 +106,5 @@ class CorrelatingEventsTest extends AbstractTestCase
             UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
             UserName::from('Test'),
         ));
-
-        $eventBus->dispatch();
-        $commandBus->dispatch();
     }
 }

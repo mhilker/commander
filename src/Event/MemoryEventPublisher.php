@@ -6,7 +6,7 @@ namespace Commander\Event;
 
 use SplQueue;
 
-final class SplQueueEventPublisher implements EventPublisher
+final class MemoryEventPublisher implements EventPublisher
 {
     /** @var SplQueue | Messages[] */
     private SplQueue $queue;
