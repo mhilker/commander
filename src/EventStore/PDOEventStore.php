@@ -92,13 +92,13 @@ final class PDOEventStore implements CorrelatingEventStore
             'aggregate_id' => $id->asString(),
         ]);
 
-        if ($statement->rowCount() === 0) {
-            throw new EventStoreException('No events for aggregate found.');
-        }
-
         $messages = [];
         while ($row = $statement->fetch()) {
             $messages[] = $this->map->reconstitute($row);
+        }
+
+        if (count($messages) === 0) {
+            throw new EventStoreException('No events for aggregate found.');
         }
 
         return Messages::from($messages);
