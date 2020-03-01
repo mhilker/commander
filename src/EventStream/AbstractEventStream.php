@@ -44,7 +44,7 @@ abstract class AbstractEventStream
 
     abstract protected function getEventStreamId(): Identifier;
 
-    public function popEvents(): Messages
+    public function popMessages(): Messages
     {
         $messages = Messages::from($this->messages);
         $this->messages = [];

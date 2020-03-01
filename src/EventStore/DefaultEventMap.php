@@ -9,12 +9,12 @@ use Commander\EventStore\Exception\EventMapException;
 
 final class DefaultEventMap implements EventMap
 {
-    private array $map;
+    private array $map = [];
 
     /**
      * @throws EventMapException
      */
-    public function __construct(iterable $map)
+    public function __construct(array $map)
     {
         foreach ($map as $topic => $events) {
             foreach ($events as $version => $class) {

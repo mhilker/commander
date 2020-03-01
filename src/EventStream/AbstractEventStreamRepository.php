@@ -29,7 +29,7 @@ abstract class AbstractEventStreamRepository implements EventStreamRepository
     public function save(AbstractEventStream $stream): void
     {
         try {
-            $messages = $stream->popEvents();
+            $messages = $stream->popMessages();
             $this->store->store($messages);
         } catch (Exception $exception) {
             throw new EventStreamNotSavedException('Could not save event stream', 0, $exception);
