@@ -23,4 +23,5 @@ $ docker-compose up
 $ ./vendor/bin/phpunit
 ```
 
-[ico-workflow]: https://img.shields.io/github/workflow/status/mhilker/commander/Build?style=flat-square)
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-workflow]: https://img.shields.io/github/workflow/status/mhilker/commander/Build?style=flat-square
