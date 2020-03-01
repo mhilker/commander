@@ -61,5 +61,3 @@ final class DirectCommandBus implements CommandBus
         $this->dispatcher->dispatch();
     }
 }
-
-
