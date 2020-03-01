@@ -10,9 +10,9 @@ final class DirectEventBus implements EventDispatcher
 {
     private EventHandlers $handlers;
     private EventContext $context;
-    private MemoryEventPublisher $publisher;
+    private EventPublisher $publisher;
 
-    public function __construct(EventHandlers $handlers, EventContext $context, MemoryEventPublisher $publisher)
+    public function __construct(EventHandlers $handlers, EventContext $context, EventPublisher $publisher)
     {
         $this->handlers = $handlers;
         $this->context = $context;

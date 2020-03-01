@@ -63,10 +63,8 @@ final class DefaultEventMap implements EventMap
             ));
         }
 
-        $class = $this->map[$topic][$version];
-
         // TODO: check if method exists
 
-        return $class;
+        return $this->map[$topic][$version];
     }
 }

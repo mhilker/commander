@@ -6,7 +6,16 @@
          beStrictAboutCoversAnnotation="false"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
-         verbose="true">
+         verbose="true"
+>
+    <php>
+        <env name="MYSQL_HOST" value="127.0.0.1"/>
+        <env name="MYSQL_PORT" value="33306"/>
+        <env name="MYSQL_DATABASE" value="event_store"/>
+        <env name="MYSQL_USERNAME" value="root"/>
+        <env name="MYSQL_PASSWORD" value="password"/>
+    </php>
+
     <testsuites>
         <testsuite name="default">
             <directory suffix="Test.php">tests</directory>
