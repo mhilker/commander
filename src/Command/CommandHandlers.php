@@ -24,7 +24,7 @@ final class CommandHandlers
     private function add(string $commandClass, callable $commandHandler): void
     {
         if (!class_exists($commandClass)) {
-            throw new InvalidCommandClassException('Command does not exists.');
+            throw new InvalidCommandClassException('Command does not exists');
         }
 
         $this->handlers[$commandClass] = $commandHandler;

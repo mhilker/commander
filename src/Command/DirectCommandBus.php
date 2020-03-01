@@ -7,26 +7,26 @@ namespace Commander\Command;
 use Commander\Command\Exception\CommandFailedException;
 use Commander\Command\Exception\CommandHandlerNotFoundException;
 use Commander\Event\EventDispatcher;
-use Commander\EventStore\CorrelatingEventStore;
+use Commander\EventStore\EventContext;
 use Exception;
 
 final class DirectCommandBus implements CommandBus
 {
     private CommandHandlers $commandHandlers;
-    private CorrelatingEventStore $eventStore;
-    private CommandPublisher $commandPublisher;
-    private EventDispatcher $eventDispatcher;
+    private EventContext $context;
+    private CommandPublisher $publisher;
+    private EventDispatcher $dispatcher;
 
     public function __construct(
         CommandHandlers $commandHandlers,
-        CorrelatingEventStore $eventStore,
-        CommandPublisher $commandPublisher,
-        EventDispatcher $eventDispatcher
+        EventContext $context,
+        CommandPublisher $publisher,
+        EventDispatcher $dispatcher
     ) {
         $this->commandHandlers = $commandHandlers;
-        $this->eventStore = $eventStore;
-        $this->commandPublisher = $commandPublisher;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->context = $context;
+        $this->publisher = $publisher;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -34,14 +34,14 @@ final class DirectCommandBus implements CommandBus
      */
     public function execute(Command $command): void
     {
-        $this->commandPublisher->publish($command);
+        $this->publisher->publish($command);
 
-        while ($this->commandPublisher->count() > 0) {
-            $command = $this->commandPublisher->dequeue();
+        while ($this->publisher->count() > 0) {
+            $command = $this->publisher->dequeue();
             try {
                 $this->doExecute($command);
             } catch (Exception $exception) {
-                throw new CommandFailedException('Command failed.', 0, $exception);
+                throw new CommandFailedException('Command failed', 0, $exception);
             }
         }
     }
@@ -51,14 +51,14 @@ final class DirectCommandBus implements CommandBus
      */
     private function doExecute(Command $command): void
     {
-        $this->eventStore->useCorrelationId($command->getId());
-        $this->eventStore->useCausationId($command->getId());
+        $this->context->setCurrentCorrelationId($command->getId());
+        $this->context->setCurrentCausationId($command->getId());
 
         $commandClass = get_class($command);
         $handler = $this->commandHandlers->getHandlerForCommand($commandClass);
         $handler($command);
 
-        $this->eventDispatcher->dispatch();
+        $this->dispatcher->dispatch();
     }
 }
 

@@ -12,10 +12,11 @@ use Commander\Event\Event;
 use Commander\Event\EventHandlers;
 use Commander\Event\MemoryEventPublisher;
 use Commander\EventStore\DefaultEventMap;
+use Commander\EventStore\EventContext;
 use Commander\EventStore\PDOEventStore;
-use Commander\Stub\Aggregate\AggregateUserRepository;
-use Commander\Stub\Aggregate\UserId;
-use Commander\Stub\Aggregate\UserName;
+use Commander\Stub\EventStream\EventStreamUserRepository;
+use Commander\Stub\EventStream\UserId;
+use Commander\Stub\EventStream\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
 use Commander\Stub\Command\RegisterUserCommandHandler;
 use Commander\Stub\Command\RenameUserCommand;
@@ -26,10 +27,12 @@ use Commander\Stub\Event\StubEventHandler;
 use Commander\Stub\Event\UserDisabledEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
-use Commander\Stub\EventStore\UserEventStoreAggregateRepository;
+use Commander\Stub\EventStream\UserEventStreamRepository;
 use Exception;
+use PDO;
+use PHPUnit\Framework\TestCase;
 
-class CorrelatingEventsTest extends AbstractTestCase
+class CorrelatingEventsTest extends TestCase
 {
     public function setUp(): void
     {
@@ -111,30 +114,41 @@ class CorrelatingEventsTest extends AbstractTestCase
         ));
     }
 
+    /**
+     * @throws Exception
+     */
     private function createCommandBus(array $events, array $stubEventHandlers): DirectCommandBus
     {
         $pdo = $this->createPDO();
-        $eventStore = new PDOEventStore($pdo, new DefaultEventMap($events));
+        $context = new EventContext();
+        $map = new DefaultEventMap($events);
+        $eventStore = new PDOEventStore($pdo, $map, $context);
         $eventPublisher = new MemoryEventPublisher();
-        $aggregateRepository = new UserEventStoreAggregateRepository($eventStore, $eventPublisher);
-        $userRepository = new AggregateUserRepository($aggregateRepository);
+        $repository = new UserEventStreamRepository($eventStore, $eventPublisher);
+        $userRepository = new EventStreamUserRepository($repository);
         $commandPublisher = new MemoryCommandPublisher();
         $eventHandlers = EventHandlers::from([
             new StubEventHandler(...$stubEventHandlers),
             new DisableUsersWithBlacklistedNamesPolicy($userRepository),
             new RegisterUserWhenUserWasDisabledPolicy($commandPublisher),
         ]);
-        $eventBus = new DirectEventBus(
-            $eventHandlers,
-            $eventStore,
-            $eventPublisher
-        );
+        $eventBus = new DirectEventBus($eventHandlers, $context, $eventPublisher);
         $commandHandlers = new CommandHandlers([
             RegisterUserCommand::class => new RegisterUserCommandHandler($userRepository),
             RenameUserCommand::class => new RenameUserCommandHandler($userRepository),
         ]);
+        return new DirectCommandBus($commandHandlers, $context, $commandPublisher, $eventBus);
+    }
 
-        $commandBus = new DirectCommandBus($commandHandlers, $eventStore, $commandPublisher, $eventBus);
-        return $commandBus;
+    protected function createPDO(): PDO
+    {
+        $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=event_store';
+        $username = 'root';
+        $password = 'password';
+        $options = [
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8;',
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        ];
+        return new PDO($dsn, $username, $password, $options);
     }
 }

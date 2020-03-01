@@ -6,23 +6,26 @@ namespace Commander\EventStore;
 
 use Commander\Event\Messages;
 use Commander\EventStore\Exception\EventStoreException;
-use Commander\Util\Identifier;
+use Commander\ID\Identifier;
 use Exception;
 use PDO;
 
-final class PDOEventStore implements CorrelatingEventStore
+final class PDOEventStore implements EventStore
 {
     private PDO $pdo;
     private EventMap $map;
-    private Identifier $currentCorrelationId;
-    private Identifier $currentCausationId;
+    private EventContext $context;
 
-    public function __construct(PDO $pdo, EventMap $map)
+    public function __construct(PDO $pdo, EventMap $map, EventContext $context)
     {
         $this->pdo = $pdo;
         $this->map = $map;
+        $this->context = $context;
     }
 
+    /**
+     * @throws EventStoreException
+     */
     public function store(Messages $messages): void
     {
         try {
@@ -33,8 +36,8 @@ final class PDOEventStore implements CorrelatingEventStore
                     `event_id`, 
                     `correlation_id`, 
                     `causation_id`, 
-                    `aggregate_id`, 
-                    `aggregate_version`, 
+                    `event_stream_id`, 
+                    `event_stream_version`, 
                     `occurred_on`, 
                     `topic`, 
                     `version`, 
@@ -44,8 +47,8 @@ final class PDOEventStore implements CorrelatingEventStore
                     :event_id, 
                     :correlation_id, 
                     :causation_id, 
-                    :aggregate_id, 
-                    :aggregate_version, 
+                    :event_stream_id, 
+                    :event_stream_version, 
                     :occurred_on, 
                     :topic, 
                     :version, 
@@ -57,25 +60,28 @@ final class PDOEventStore implements CorrelatingEventStore
 
             foreach ($messages as $message) {
                 $statement->execute([
-                    'event_id'          => $message->getId()->asString(),
-                    'correlation_id'    => $this->currentCorrelationId->asString(),
-                    'causation_id'      => $this->currentCausationId->asString(),
-                    'aggregate_id'      => $message->getAggregateId()->asString(),
-                    'aggregate_version' => $message->getAggregateVersion(),
-                    'occurred_on'       => $message->getOccurredOn()->format('Y-m-d H:i:s'),
-                    'topic'             => $message->getEvent()->getTopic(),
-                    'version'           => $message->getEvent()->getVersion(),
-                    'payload'           => json_encode($message->getEvent()->getPayload(), JSON_THROW_ON_ERROR)
+                    'event_id'             => $message->getId()->asString(),
+                    'correlation_id'       => $this->context->getCurrentCorrelationId()->asString(),
+                    'causation_id'         => $this->context->getCurrentCausationId()->asString(),
+                    'event_stream_id'      => $message->getEventStreamId()->asString(),
+                    'event_stream_version' => $message->getEventStreamVersion(),
+                    'occurred_on'          => $message->getOccurredOn()->format('Y-m-d H:i:s'),
+                    'topic'                => $message->getEvent()->getTopic(),
+                    'version'              => $message->getEvent()->getVersion(),
+                    'payload'              => json_encode($message->getEvent()->getPayload(), JSON_THROW_ON_ERROR)
                 ]);
             }
 
             $this->pdo->commit();
         } catch (Exception $exception) {
             $this->pdo->rollBack();
-            throw new EventStoreException('Could not store events.', 0, $exception);
+            throw new EventStoreException('Could not store events', 0, $exception);
         }
     }
 
+    /**
+     * @throws EventStoreException
+     */
     public function load(Identifier $id): Messages
     {
         $query = <<<QUERY
@@ -84,33 +90,28 @@ final class PDOEventStore implements CorrelatingEventStore
             FROM 
                 `events` 
             WHERE 
-                `aggregate_id` = :aggregate_id;
+                `event_stream_id` = :event_stream_id;
         QUERY;
 
-        $statement = $this->pdo->prepare($query);
-        $statement->execute([
-            'aggregate_id' => $id->asString(),
-        ]);
-
         $messages = [];
-        while ($row = $statement->fetch()) {
-            $messages[] = $this->map->reconstitute($row);
+
+        try {
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([
+                'event_stream_id' => $id->asString(),
+            ]);
+
+            while ($row = $statement->fetch()) {
+                $messages[] = $this->map->reconstitute($row);
+            }
+        } catch (Exception $exception) {
+            throw new EventStoreException('Could not load events', 0, $exception);
         }
 
         if (count($messages) === 0) {
-            throw new EventStoreException('No events for aggregate found.');
+            throw new EventStoreException('No events for event stream found');
         }
 
         return Messages::from($messages);
-    }
-
-    public function useCorrelationId(Identifier $id): void
-    {
-        $this->currentCorrelationId = $id;
-    }
-
-    public function useCausationId(Identifier $id): void
-    {
-        $this->currentCausationId = $id;
     }
 }

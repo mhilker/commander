@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Commander\Aggregate;
+namespace Commander\EventStream;
 
 use Commander\Event\Event;
 use Commander\Event\Message;
 use Commander\Event\Messages;
-use Commander\Util\Identifier;
+use Commander\ID\Identifier;
 
-abstract class AbstractAggregate
+abstract class AbstractEventStream
 {
     private int $version = 0;
     private array $messages = [];
@@ -28,10 +28,10 @@ abstract class AbstractAggregate
         return new static($messages);
     }
 
-    public function record(Event $event): void
+    protected function record(Event $event): void
     {
         $this->apply($event);
-        $this->messages[] = Message::wrap($this->getAggregateId(), $this->version, $event);
+        $this->messages[] = Message::wrap($this->getEventStreamId(), $this->version, $event);
     }
 
     private function apply(Event $event): void
@@ -42,17 +42,12 @@ abstract class AbstractAggregate
 
     abstract protected function dispatch(Event $event): void;
 
-    abstract public function getAggregateId(): Identifier;
+    abstract protected function getEventStreamId(): Identifier;
 
     public function popEvents(): Messages
     {
         $messages = Messages::from($this->messages);
         $this->messages = [];
         return $messages;
-    }
-
-    public function getVersion(): int
-    {
-        return $this->version;
     }
 }

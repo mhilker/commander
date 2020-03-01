@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Commander\Util;
+namespace Commander\ID;
 
-trait IdentifierTrait
+trait HasIdentifier
 {
     private ?UUID $id = null;
 

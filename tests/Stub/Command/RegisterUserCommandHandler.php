@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Aggregate\Exception\UserNotFoundException;
-use Commander\Stub\Aggregate\Exception\UserNotSavedException;
-use Commander\Stub\Aggregate\UserAggregate;
-use Commander\Stub\Aggregate\UserId;
-use Commander\Stub\Aggregate\UserRepository;
+use Commander\Stub\EventStream\Exception\UserNotFoundException;
+use Commander\Stub\EventStream\Exception\UserNotSavedException;
+use Commander\Stub\EventStream\UserEventStream;
+use Commander\Stub\EventStream\UserId;
+use Commander\Stub\EventStream\UserRepository;
 use Commander\Stub\Command\Exception\UserAlreadyExistsException;
 
 final class RegisterUserCommandHandler
@@ -31,7 +31,7 @@ final class RegisterUserCommandHandler
 
         $this->assertUserDoesNotExists($id);
 
-        $user = UserAggregate::register($id, $name);
+        $user = UserEventStream::register($id, $name);
 
         $this->repository->save($user);
     }
@@ -47,6 +47,6 @@ final class RegisterUserCommandHandler
             return true;
         }
 
-        throw new UserAlreadyExistsException('User already exists.');
+        throw new UserAlreadyExistsException('User already exists');
     }
 }

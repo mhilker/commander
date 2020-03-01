@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub\Aggregate\Exception;
+namespace Commander\Stub\EventStream\Exception;
 
 use Exception;
 

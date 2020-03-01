@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Commander\Stub\Command;
 
-use Commander\Stub\Aggregate\Exception\UserNotFoundException;
-use Commander\Stub\Aggregate\Exception\UserNotSavedException;
-use Commander\Stub\Aggregate\UserRepository;
+use Commander\Stub\EventStream\Exception\UserNotFoundException;
+use Commander\Stub\EventStream\Exception\UserNotSavedException;
+use Commander\Stub\EventStream\UserRepository;
 
 final class RenameUserCommandHandler
 {

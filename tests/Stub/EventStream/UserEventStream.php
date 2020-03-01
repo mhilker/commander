@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub\Aggregate;
+namespace Commander\Stub\EventStream;
 
-use Commander\Aggregate\AbstractAggregate;
+use Commander\EventStream\AbstractEventStream;
 use Commander\Event\Event;
 use Commander\Stub\Event\UserDisabledEvent;
 use Commander\Stub\Event\UserRegisteredEvent;
 use Commander\Stub\Event\UserRenamedEvent;
-use Commander\Util\Identifier;
+use Commander\ID\Identifier;
 
-final class UserAggregate extends AbstractAggregate
+final class UserEventStream extends AbstractEventStream
 {
     private UserId $id;
     private UserName $name;
     private bool $active;
 
-    public static function register(UserId $id, UserName $name): UserAggregate
+    public static function register(UserId $id, UserName $name): UserEventStream
     {
         $user = new self(null);
         $user->record(UserRegisteredEvent::occur($id, $name));
@@ -73,7 +73,7 @@ final class UserAggregate extends AbstractAggregate
         }
     }
 
-    public function getAggregateId(): Identifier
+    public function getEventStreamId(): Identifier
     {
         return $this->id;
     }

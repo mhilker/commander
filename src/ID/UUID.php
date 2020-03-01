@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander\Util;
+namespace Commander\ID;
 
 class UUID implements Identifier
 {
@@ -16,7 +16,7 @@ class UUID implements Identifier
     private function __construct(string $id)
     {
         if ($id === '') {
-            throw new InvalidUUIDException('ID must not be empty.');
+            throw new InvalidUUIDException('ID must not be empty');
         }
 
         $this->id = $id;
@@ -28,7 +28,7 @@ class UUID implements Identifier
     public static function fromV4(string $id): self
     {
         if (!preg_match(self::PATTERN_V4, $id)) {
-            throw new InvalidUUIDException('ID is invalid.');
+            throw new InvalidUUIDException('ID is invalid');
         }
 
         return new static($id);

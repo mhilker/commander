@@ -29,7 +29,7 @@ final class DefaultEventMap implements EventMap
     private function add(string $topic, int $version, string $class): void
     {
         if (!class_exists($class)) {
-            throw new EventMapException(sprintf('Class "%s" does not exist.', $class));
+            throw new EventMapException(sprintf('Class "%s" does not exist', $class));
         }
 
         $this->map[$topic][$version] = $class;
@@ -63,6 +63,10 @@ final class DefaultEventMap implements EventMap
             ));
         }
 
-        return $this->map[$topic][$version];
+        $class = $this->map[$topic][$version];
+
+        // TODO: check if method exists
+
+        return $class;
     }
 }

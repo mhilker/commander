@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub\Aggregate;
+namespace Commander\Stub\EventStream;
 
-use Commander\Util\UUID;
+use Commander\ID\UUID;
 
 final class UserId extends UUID
 {

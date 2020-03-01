@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Commander\Command;
 
-use Commander\Util\Identifier;
+use Commander\ID\Identifier;
 
 interface Command
 {

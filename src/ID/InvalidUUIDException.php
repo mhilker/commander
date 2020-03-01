@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander\Util;
+namespace Commander\ID;
 
 use Exception;
 

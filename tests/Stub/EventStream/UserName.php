@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Commander\Stub\Aggregate;
+namespace Commander\Stub\EventStream;
 
-use Commander\Stub\Aggregate\Exception\InvalidUserNameException;
+use Commander\Stub\EventStream\Exception\InvalidUserNameException;
 
 final class UserName
 {
@@ -16,7 +16,7 @@ final class UserName
     private function __construct(string $name)
     {
         if ($name === '') {
-            throw new InvalidUserNameException('UserName must not be empty.');
+            throw new InvalidUserNameException('UserName must not be empty');
         }
         $this->name = $name;
     }

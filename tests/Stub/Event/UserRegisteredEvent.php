@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Commander\Stub\Event;
 
 use Commander\Event\Event;
-use Commander\Stub\Aggregate\UserId;
-use Commander\Stub\Aggregate\UserName;
+use Commander\Stub\EventStream\UserId;
+use Commander\Stub\EventStream\UserName;
 
 final class UserRegisteredEvent implements Event
 {

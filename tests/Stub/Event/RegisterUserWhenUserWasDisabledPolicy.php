@@ -7,8 +7,8 @@ namespace Commander\Stub\Event;
 use Commander\Command\CommandPublisher;
 use Commander\Event\Event;
 use Commander\Event\EventHandler;
-use Commander\Stub\Aggregate\UserId;
-use Commander\Stub\Aggregate\UserName;
+use Commander\Stub\EventStream\UserId;
+use Commander\Stub\EventStream\UserName;
 use Commander\Stub\Command\RegisterUserCommand;
 
 final class RegisterUserWhenUserWasDisabledPolicy implements EventHandler

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Commander\Stub\Event;
 
 use Commander\Event\Event;
-use Commander\Stub\Aggregate\UserId;
+use Commander\Stub\EventStream\UserId;
 
 final class UserDisabledEvent implements Event
 {

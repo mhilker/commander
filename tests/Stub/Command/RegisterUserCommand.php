@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Commander\Stub\Command;
 
 use Commander\Command\Command;
-use Commander\Stub\Aggregate\UserId;
-use Commander\Stub\Aggregate\UserName;
-use Commander\Util\IdentifierTrait;
+use Commander\Stub\EventStream\UserId;
+use Commander\Stub\EventStream\UserName;
+use Commander\ID\HasIdentifier;
 
 final class RegisterUserCommand implements Command
 {
-    use IdentifierTrait;
+    use HasIdentifier;
 
     private UserId $userId;
     private UserName $name;
