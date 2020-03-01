@@ -26,8 +26,8 @@ final class MemoryEventPublisher implements EventPublisher
         return $this->queue->dequeue();
     }
 
-    public function count(): int
+    public function isEmpty(): bool
     {
-        return $this->queue->count();
+        return $this->queue->isEmpty();
     }
 }

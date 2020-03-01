@@ -13,7 +13,7 @@ use Commander\Stub\EventStream\UserRepository;
 final class DisableUsersWithBlacklistedNamesPolicy implements EventHandler
 {
     private const BLACKLISTED_NAMES = [
-        'Test',
+        'HasIdentifierTest',
     ];
 
     private UserRepository $repository;

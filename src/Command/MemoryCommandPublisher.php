@@ -20,9 +20,9 @@ final class MemoryCommandPublisher implements CommandPublisher
         $this->commands->enqueue($command);
     }
 
-    public function count(): int
+    public function isEmpty(): bool
     {
-        return $this->commands->count();
+        return $this->commands->isEmpty();
     }
 
     public function dequeue(): Command

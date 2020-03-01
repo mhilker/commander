@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Commander;
+namespace Commander\Integration;
 
 use Commander\Command\CommandHandlers;
 use Commander\Command\DirectCommandBus;
@@ -32,6 +32,9 @@ use Exception;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @coversNothing
+ */
 class CorrelatingEventsTest extends TestCase
 {
     public function setUp(): void
@@ -102,15 +105,15 @@ class CorrelatingEventsTest extends TestCase
         ));
         $commandBus->execute(new RenameUserCommand(
             UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
-            UserName::from('Test Tester'),
+            UserName::from('HasIdentifierTest Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
             UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
-            UserName::from('Test Tester'),
+            UserName::from('HasIdentifierTest Tester'),
         ));
         $commandBus->execute(new RenameUserCommand(
             UserId::fromV4('f5295e41-07ac-43c4-b99a-43247275ae73'),
-            UserName::from('Test'),
+            UserName::from('HasIdentifierTest'),
         ));
     }
 

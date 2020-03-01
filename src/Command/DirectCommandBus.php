@@ -36,7 +36,7 @@ final class DirectCommandBus implements CommandBus
     {
         $this->publisher->publish($command);
 
-        while ($this->publisher->count() > 0) {
+        while (!$this->publisher->isEmpty()) {
             $command = $this->publisher->dequeue();
             try {
                 $this->doExecute($command);

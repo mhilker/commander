@@ -1,0 +1,21 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check code style
+        run: vendor/bin/phpcs
+
+      - name: Run unit tests
+        run: vendor/bin/phpunit --testsuite unit

@@ -21,7 +21,7 @@ final class DirectEventBus implements EventDispatcher
 
     public function dispatch(): void
     {
-        while ($this->publisher->count() > 0) {
+        while (!$this->publisher->isEmpty()) {
             $messages = $this->publisher->dequeue();
             $this->dispatchMessages($messages);
         }

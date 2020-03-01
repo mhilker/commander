@@ -8,7 +8,7 @@ interface CommandPublisher
 {
     public function publish(Command $command): void;
 
-    public function count(): int;
+    public function isEmpty(): bool;
 
     public function dequeue(): Command;
 }
