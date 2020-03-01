@@ -21,9 +21,12 @@ final class CommandHandlersTest extends TestCase
         $command2 = $this->createMock(Command::class);
         $command3 = $this->createMock(Command::class);
 
-        $commandHandler1 = static function (Command $command) {};
-        $commandHandler2 = static function (Command $command) {};
-        $commandHandler3 = static function (Command $command) {};
+        $commandHandler1 = static function (Command $command) {
+        };
+        $commandHandler2 = static function (Command $command) {
+        };
+        $commandHandler3 = static function (Command $command) {
+        };
 
         $commandHandlers = new CommandHandlers([
             get_class($command1) => $commandHandler1,
@@ -46,7 +49,8 @@ final class CommandHandlersTest extends TestCase
         $this->expectExceptionMessage('Command does not exists');
 
         new CommandHandlers([
-            'not-mapped-class-name' => static function (Command $command) {},
+            'not-mapped-class-name' => static function (Command $command) {
+            },
         ]);
     }
 
@@ -58,7 +62,8 @@ final class CommandHandlersTest extends TestCase
         $command1 = $this->createMock(Command::class);
 
         $commandHandlers = new CommandHandlers([
-            get_class($command1) => static function (Command $command) {},
+            get_class($command1) => static function (Command $command) {
+            },
         ]);
 
         $commandHandlers->getHandlerForCommand('not-mapped-class-name');
